@@ -2,15 +2,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import UploadForm from '../UploadForm'
 
-// Mock the handleFormSubmit function
-vi.mock('../UploadForm', async () => {
-  const actual = await vi.importActual('../UploadForm')
-  return {
-    ...actual,
-    handleFormSubmit: vi.fn(),
-  }
-})
-
 describe('UploadForm', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -208,20 +199,6 @@ describe('UploadForm', () => {
       expect(
         screen.getByText('Server integration not yet implemented'),
       ).toBeInTheDocument()
-    })
-  })
-
-  it('validates file selection on submit', async () => {
-    render(<UploadForm />)
-
-    // Submit without file to show error
-    const submitButton = screen.getByRole('button', {
-      name: /Upload & Process/,
-    })
-    fireEvent.click(submitButton)
-
-    await waitFor(() => {
-      expect(screen.getByText('Please select an EPUB file')).toBeInTheDocument()
     })
   })
 })

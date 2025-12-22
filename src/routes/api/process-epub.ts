@@ -23,7 +23,7 @@ function isSupportedLanguage(value: unknown): value is SupportedLanguage {
 function createTempFilePath(suffix: string = ''): string {
   const timestamp = Date.now()
   const randomString = randomBytes(16).toString('hex')
-  const extension = 'epub'
+  const extension = '.epub'
   return join('/tmp', `${randomString}-${timestamp}${suffix}${extension}`)
 }
 
@@ -165,7 +165,7 @@ export const Route = createFileRoute('/api/process-epub')({
             // Return processed file for download
             return new Response(new Uint8Array(processedFileBuffer), {
               headers: {
-                'Content-Disposition': `attachment; filename="${fileValue.name}"`,
+                'Content-Disposition': `attachment; filename="${fileValue.name.replace('.epub', '')}-hyphenated.epub"`,
                 'Content-Type': 'application/epub+zip',
                 'Content-Length': processedFileBuffer.length.toString(),
               },

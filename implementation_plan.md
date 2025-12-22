@@ -1,94 +1,111 @@
 # Implementation Plan
 
-[Overview]
-Replace console.log statements in src/routes/api/process-epub.ts with actual EPUB hyphenation processing using the epub-hyphen CLI tool.
+## [Overview]
 
-This implementation will transform the current placeholder API endpoint into a fully functional EPUB processing pipeline that accepts uploaded EPUB files, applies language-specific hyphenation using the epub-hyphen tool, and returns processed files for download. The solution addresses the core functionality gap in the current codebase while maintaining existing validation patterns and error handling strategies.
+Single sentence describing the overall goal.
+This plan implements automatic EPUB file download functionality after successful processing, with proper error handling and enhanced user feedback.
 
-[Types]
+Multiple paragraphs outlining the scope, context, and high-level approach.
+The current implementation has a mismatch between frontend and backend response handling. The backend correctly processes EPUB files and returns them as binary data with proper headers, but the frontend expects JSON responses and fails to handle the binary data. This implementation will modify the frontend to properly handle binary responses, trigger automatic file downloads, and provide appropriate user feedback. The backend will be enhanced to add a "-hyphenated" suffix to processed filenames. The solution maintains all existing validation, error handling, and processing logic while adding the missing download functionality.
+
+## [Types]
+
 Single sentence describing the type system changes.
+No new types are required, but existing types will be used in modified functions.
 
-No new types are required as the existing SupportedLanguage type ('en' | 'ru') is compatible with epub-hyphen's language code requirements.
+Detailed type definitions, interfaces, enums, or data structures with complete specifications.
 
-[Files]
+- `UploadFormData`: Existing interface for form data (file + language)
+- `FormValidationError`: Existing union type for validation errors
+- `SupportedLanguage`: Existing type for language validation ('en' | 'ru')
+- `File`: Standard browser File type
+- `Blob`: Standard browser Blob type for file downloads
+
+## [Files]
+
 Single sentence describing file modifications.
-
-The implementation will modify only the existing src/routes/api/process-epub.ts file, adding file system operations and command execution logic.
+Two files will be modified to implement the download functionality.
 
 Detailed breakdown:
 
-- **Modified file**: src/routes/api/process-epub.ts
-  - Add imports for Node.js modules: fs, path, crypto, child_process
-  - Replace console.log statements (lines 73-77) with actual processing logic
-  - Add temporary file creation and cleanup logic
-  - Add epub-hyphen command execution with error handling
-  - Modify response to return processed file for download
+- **Modified Files**:
+  - `src/components/UploadForm.tsx`: Update submitForm function to handle binary responses and trigger downloads
+  - `src/routes/api/process-epub.ts`: Add "-hyphenated" suffix to downloaded filename
 
-[Functions]
+- **No New Files**: All changes are modifications to existing files
+- **No Deleted Files**: All existing files remain in place
+
+## [Functions]
+
 Single sentence describing function modifications.
-
-The implementation will add new utility functions for file operations and command execution while preserving existing validation functions.
+The submitForm function will be significantly modified, and the backend response will be enhanced.
 
 Detailed breakdown:
 
-- **New functions**:
-  - `createTempFilePath()`: Generates unique temporary file paths using timestamp and random string
-  - `writeFileToTemp()`: Writes uploaded File content to temporary filesystem location
-  - `executeEpubHyphen()`: Executes epub-hyphen command with proper error handling
-  - `readProcessedFile()`: Reads processed file content for response
-- **Modified functions**: None (existing validation functions remain unchanged)
-- **Removed functions**: None
+- **Modified Functions**:
+  - `submitForm(uploadRequest: UploadFormData): Promise<void>` in `src/components/UploadForm.tsx`
+    - Change: Replace JSON parsing with binary response handling
+    - Add: File download logic using Blob and URL.createObjectURL
+    - Add: Success feedback with form clearing
+    - Add: Response type detection (binary vs JSON)
 
-[Classes]
+- **Backend Enhancement**:
+  - Modify `Content-Disposition` header in `src/routes/api/process-epub.ts`
+    - Change: Add "-hyphenated" suffix to filename in response headers
+
+## [Classes]
+
 Single sentence describing class modifications.
-
-No class modifications are required as this implementation uses functional programming patterns.
+No class modifications are required for this implementation.
 
 Detailed breakdown:
 
-- **New classes**: None
-- **Modified classes**: None
-- **Removed classes**: None
+- No new classes needed
+- No existing classes modified
+- All changes are to standalone functions and response handling
 
-[Dependencies]
+## [Dependencies]
+
 Single sentence describing dependency modifications.
+No new dependencies are required for this implementation.
 
-No new npm dependencies are required as the implementation uses built-in Node.js modules.
+Details of new packages, version changes, and integration requirements.
 
-Detailed breakdown:
+- No new npm packages needed
+- No version changes required
+- Uses existing browser APIs: Blob, URL.createObjectURL, fetch
+- Maintains compatibility with existing TanStack framework
 
-- **New packages**: None (using fs, path, crypto, child_process from Node.js core)
-- **Version changes**: None
-- **Integration requirements**: epub-hyphen CLI tool must be available in system PATH
+## [Testing]
 
-[Testing]
 Single sentence describing testing approach.
+Manual testing will verify the download functionality and error handling.
 
-Manual testing will be performed to verify file processing and error handling scenarios.
+Test file requirements, existing test modifications, and validation strategies.
 
-Detailed breakdown:
+- **Manual Testing**:
+  - Upload valid EPUB file and verify automatic download
+  - Verify "-hyphenated" suffix in downloaded filename
+  - Test error scenarios (invalid file type, size, language)
+  - Verify success message and form clearing
+  - Test network error handling
 
-- **Test scenarios**:
-  - Successful processing with valid EPUB files (en and ru languages)
-  - Error handling for invalid language codes
-  - Error handling for epub-hyphen command failures
-  - File size validation and error responses
-  - Temporary file creation and persistence verification
-- **Existing test modifications**: None (no existing tests for this endpoint)
-- **Validation strategies**: Manual verification of processed file content and structure
+- **Existing Tests**:
+  - No changes to existing unit tests
+  - Component tests remain valid
+  - Form validation tests unchanged
 
-[Implementation Order]
+## [Implementation Order]
+
 Single sentence describing the implementation sequence.
+Changes should be implemented in backend-first order to ensure compatibility.
 
-The implementation will follow a logical sequence to ensure proper integration and error handling.
+Numbered steps showing the logical order of changes to minimize conflicts and ensure successful integration:
 
-Numbered steps showing the logical order of changes:
+1. **Backend Enhancement**: Modify filename in `src/routes/api/process-epub.ts`
+2. **Frontend Update**: Modify `submitForm` function in `src/components/UploadForm.tsx`
+3. **Testing**: Manual verification of download functionality
+4. **Validation**: Test error scenarios and edge cases
+5. **Documentation**: Update memory bank with implementation details
 
-1. Add required Node.js module imports to the file
-2. Implement temporary file creation utility functions
-3. Implement file writing and reading functions
-4. Implement epub-hyphen command execution with error handling
-5. Replace console.log statements with processing pipeline
-6. Modify API response to return processed file
-7. Test with sample EPUB files for both languages
-8. Verify error handling for various failure scenarios
+This order ensures the backend is ready to serve files with the correct filename before the frontend attempts to download them.

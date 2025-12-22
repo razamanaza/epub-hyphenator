@@ -49,22 +49,40 @@ async function submitForm(uploadRequest: UploadFormData): Promise<void> {
       body: formData,
     })
 
-    const result = await response.json()
-
     if (!response.ok) {
-      throw new Error(result.error || 'Upload failed')
+      // Handle error responses (JSON format)
+      const errorResult = await response.json()
+      throw new Error(errorResult.error || 'Processing failed')
     }
 
-    if (!result.success) {
-      throw new Error(result.error || 'Processing failed')
+    // Check if response is binary (successful processing)
+    const contentType = response.headers.get('content-type')
+    if (contentType?.includes('application/epub+zip')) {
+      // Handle binary response - download the file
+      const blob = await response.blob()
+
+      // Extract filename from Content-Disposition header
+      const contentDisposition = response.headers.get('content-disposition')
+      const filenameMatch = contentDisposition?.match(/filename="([^"]+)"/)
+      const filename = filenameMatch ? filenameMatch[1] : 'hyphenated-file.epub'
+
+      // Create download link and trigger click
+      const downloadUrl = URL.createObjectURL(blob)
+      const downloadLink = document.createElement('a')
+      downloadLink.href = downloadUrl
+      downloadLink.download = filename
+      document.body.appendChild(downloadLink)
+      downloadLink.click()
+      document.body.removeChild(downloadLink)
+      URL.revokeObjectURL(downloadUrl)
+
+      // Return success message for UI feedback
+      return Promise.resolve()
+    } else {
+      // Handle unexpected JSON success response
+      const result = await response.json()
+      throw new Error(result.error || 'Unexpected response format')
     }
-
-    // For now, just log the success message
-    console.log('Upload successful:', result.message)
-
-    // You could show a success message here instead of throwing an error
-    // For now, we'll throw the message to show it works
-    throw new Error(result.message)
   } catch (error) {
     if (error instanceof Error) {
       throw error
@@ -109,7 +127,9 @@ export default function UploadForm() {
     setIsSubmitting(true)
     try {
       await submitForm(formData)
-      // Success handling would go here
+      // Show success message and clear form
+      setError(null)
+      setFormData({ file: null, language: 'en' })
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'An unexpected error occurred',

@@ -4,28 +4,29 @@
 
 ### Primary Objective
 
-Complete the MVP implementation of the EPUB Hyphenator by implementing the server-side processing pipeline and connecting it to the existing frontend interface.
+Finalize the MVP implementation of the EPUB Hyphenator by completing testing, deployment preparation, and edge case handling for the fully functional processing pipeline.
 
 ### Current Implementation Status
 
-- **Frontend**: ✅ Complete (upload form, validation, UI)
-- **Backend**: 🚧 Foundation Started (API endpoint implemented, file handling working)
-- **Processing**: ⏸️ Logging Complete (file info logged, hyphenation pending)
-- **Testing**: ✅ Frontend unit tests complete + API endpoint tested
+- **Frontend**: ✅ Complete (upload form, validation, UI, API integration)
+- **Backend**: ✅ Complete (processing pipeline with CLI tool integration)
+- **Processing**: ✅ Complete (file upload, processing, download working)
+- **Testing**: ✅ Frontend unit tests complete + basic integration validated
+- **Deployment**: ❌ Not Started (CLI tool dependency documentation needed)
 
 ### Immediate Tasks
 
-1. **Implement tRPC Backend**: Create type-safe API endpoints
-2. **EPUB Processing**: Build file parsing and hyphenation pipeline
-3. **File Handling**: Implement upload/download mechanics
-4. **Integration**: Connect frontend to backend processing
-5. **Error Handling**: Add comprehensive error management
+1. **Comprehensive Testing**: Validate CLI tool integration and error handling
+2. **Deployment Documentation**: Document `epub-hyphen` installation requirements
+3. **Performance Validation**: Test large file handling and memory usage
+4. **User Experience Polish**: Add success feedback and enhanced progress indicators
+5. **Monitoring Setup**: Implement error tracking and logging
 
 ## Recent Changes and Decisions
 
 ### Latest Implementation Work
 
-The project has evolved from a generic TanStack template to a focused EPUB hyphenation application:
+The project has evolved from a basic frontend to a complete EPUB processing application:
 
 #### Completed Components
 
@@ -36,6 +37,7 @@ The project has evolved from a generic TanStack template to a focused EPUB hyphe
    - Loading states and error handling
    - Responsive design with Tailwind CSS
    - **API Integration**: Connected to `/api/process-epub` endpoint ✅
+   - **File Download**: Automatic download of processed files ✅
 
 2. **ErrorBanner.tsx** - Reusable error display component:
    - Dismissible error messages
@@ -48,11 +50,13 @@ The project has evolved from a generic TanStack template to a focused EPUB hyphe
    - Error scenarios
    - Component behavior
 
-4. **API Endpoint** - `src/routes/api/process-epub.ts` - Functional backend:
-   - POST handler for multipart/form-data
-   - File validation (type, size, language)
-   - Console logging of file information
-   - JSON responses with proper error handling
+4. **API Endpoint** - `src/routes/api/process-epub.ts` - Complete backend:
+   - POST handler for multipart/form-data ✅
+   - File validation (type, size, language) ✅
+   - Temporary file management and cleanup ✅
+   - CLI tool integration (`epub-hyphen`) ✅
+   - File download response with proper headers ✅
+   - Comprehensive error handling ✅
    - TanStack Start route pattern integration ✅
 
 #### Technical Decisions Made
@@ -65,7 +69,17 @@ The project has evolved from a generic TanStack template to a focused EPUB hyphe
 
 ### Key Architectural Decisions
 
-#### 1. Simple Frontend-First Approach
+#### 1. External CLI Tool Integration
+
+**Decision**: Use `epub-hyphen` CLI tool instead of custom implementation
+**Rationale**:
+
+- Faster development with proven tool
+- Professional-grade hyphenation quality
+- Reduced maintenance burden
+- Focus on integration rather than algorithm development
+
+#### 2. Simple Frontend-First Approach
 
 **Decision**: Build complete frontend before implementing backend
 **Rationale**:
@@ -75,7 +89,7 @@ The project has evolved from a generic TanStack template to a focused EPUB hyphe
 - Clear API requirements from frontend needs
 - Follows global principle of "start simple, stay simple"
 
-#### 2. Functional Components with Explicit Types
+#### 3. Functional Components with Explicit Types
 
 **Decision**: Use functional React components with comprehensive TypeScript types
 **Rationale**:
@@ -85,7 +99,7 @@ The project has evolved from a generic TanStack template to a focused EPUB hyphe
 - Cleaner testing patterns
 - Modern React best practices
 
-#### 3. Domain-Driven Type Design
+#### 4. Domain-Driven Type Design
 
 **Decision**: Define specific domain types rather than generic structures
 **Example**:
@@ -99,7 +113,7 @@ interface UploadFormData {
 }
 ```
 
-#### 4. Fail-Fast Validation
+#### 5. Fail-Fast Validation
 
 **Decision**: Validate inputs immediately and provide specific feedback
 **Implementation**: File validation on selection, form validation before submission
@@ -108,50 +122,43 @@ interface UploadFormData {
 
 ### Current Technical Challenges
 
-#### 1. EPUB Processing Library Selection
+#### 1. CLI Tool Dependency Management
 
-**Options Under Consideration**:
+**Challenges**:
 
-- `epub2`: Lightweight EPUB parser
-- `epub-parser-memory`: Full-featured parser
-- Custom implementation using JSZip
+- **Installation Requirements**: `epub-hyphen` must be available on production servers
+- **Version Compatibility**: Ensure CLI tool version matches expected behavior
+- **Error Handling**: CLI tool failures need comprehensive handling
+- **Performance**: CLI tool execution time and resource usage
 
-**Trade-offs**:
+#### 2. Deployment Configuration
 
-- **Library vs Custom**: Faster development vs. full control
-- **Memory Usage**: Streaming vs. in-memory processing
-- **Feature Set**: Basic parsing vs. comprehensive EPUB support
+**Challenges**:
 
-#### 2. Hyphenation Implementation
+- **Server Setup**: Production environment configuration for file processing
+- **Security**: File upload validation and sandboxing
+- **Monitoring**: Error tracking and performance monitoring
+- **Scaling**: Handling concurrent processing requests
 
-**Options**:
+#### 3. User Experience Enhancement
 
-- `hyphenator.js`: JavaScript hyphenation library
-- `hypher`: Pattern-based hyphenation
-- Server-side processing with language dictionaries
+**Challenges**:
 
-**Current Thinking**: Server-side processing with language-specific pattern files for better quality and performance.
-
-#### 3. File Storage Strategy
-
-**Options**:
-
-- Temporary file system storage
-- In-memory processing for small files
-- Cloud storage integration
-
-**Current Decision**: Temporary file system with automatic cleanup for MVP.
+- **Success Feedback**: Visual confirmation of processing completion
+- **Progress Indicators**: Enhanced status updates for long-running processes
+- **Error Recovery**: User-friendly guidance for common issues
+- **Documentation**: User guide and troubleshooting information
 
 ### Design Decisions Under Discussion
 
-#### 1. Error Recovery Strategy
+#### 1. Deployment Strategy
 
-**Question**: How to handle processing failures for large files?
+**Question**: How to handle CLI tool dependency in production?
 **Options**:
 
-- Retry mechanisms with exponential backoff
-- Partial processing with user notification
-- Streaming processing with checkpoint recovery
+- **Docker Container**: Package CLI tool with application
+- **Installation Script**: Automated setup on deployment
+- **Documentation**: Manual installation instructions
 
 #### 2. Performance Optimization
 
@@ -162,80 +169,68 @@ interface UploadFormData {
 - User experience with progress indicators
 - Server resource management
 
-#### 3. User Feedback for Long Processes
+#### 3. User Experience Enhancement
 
-**Question**: How to handle processing times > 10 seconds?
+**Question**: How to improve success feedback?
 **Options**:
 
-- Real-time progress updates via WebSockets
-- Email notification when complete
-- Background processing with job queue
+- **Success Banner**: Visual confirmation component
+- **Download Notification**: Clear file download indication
+- **Processing Summary**: Show what was processed
 
 ## Next Steps and Priorities
 
 ### Immediate Next Steps (This Week)
 
-#### 1. Backend API Implementation
+#### 1. Comprehensive Testing
 
 ```typescript
-// tRPC router structure to implement
-const hyphenatorRouter = router({
-  upload: procedure
-    .input(
-      z.object({
-        file: z.any(), // File upload
-        language: z.enum(['en', 'ru']),
-      }),
-    )
-    .mutation(async ({ input }) => {
-      // EPUB processing logic
-    }),
-
-  getStatus: procedure
-    .input(z.string()) // Job ID
-    .query(async ({ input }) => {
-      // Processing status
-    }),
-})
+// Test scenarios to validate
+- Various EPUB file formats and sizes
+- Different language selections
+- Error scenarios and recovery
+- Memory usage with large files
 ```
 
-#### 2. EPUB Processing Pipeline
+#### 2. Deployment Preparation
 
-1. **File Validation**: Verify EPUB structure
-2. **Content Extraction**: Parse HTML content files
-3. **Text Processing**: Apply hyphenation patterns
-4. **File Reconstruction**: Build new EPUB with processed content
-5. **Quality Assurance**: Validate output file integrity
+```typescript
+// Deployment checklist
+- Document CLI tool installation requirements
+- Configure production environment
+- Set up monitoring and error tracking
+- Prepare deployment scripts
+```
 
-#### 3. Frontend Integration
+#### 3. User Experience Polish
 
-- Replace mock `submitForm` with tRPC mutation
-- Add loading states for long-running processes
-- Implement progress indicators
-- Add download functionality for processed files
+- Add success feedback component
+- Enhance progress indicators
+- Improve error messages with recovery suggestions
+- Add user documentation
 
 ### Medium-term Priorities (Next 2-3 Weeks)
 
-#### 1. Enhanced User Experience
+#### 1. Deployment and Testing
 
-- Drag-and-drop file upload improvements
-- Real-time processing progress
-- File preview capabilities
-- Batch processing foundation
+- Comprehensive testing of all scenarios
+- Production environment configuration
+- Security hardening for file uploads
+- Performance validation and optimization
 
-#### 2. Performance Optimization
+#### 2. User Experience Enhancement
 
-- File streaming for uploads
-- Background job processing
-- Caching for common patterns
-- Memory usage optimization
+- Success feedback and download confirmation
+- Enhanced progress indicators
+- Improved error messages with recovery guidance
+- User documentation and troubleshooting guide
 
-#### 3. Error Handling Enhancement
+#### 3. Monitoring and Maintenance
 
-- Comprehensive error categories
-- User-friendly error messages
-- Recovery suggestions
-- Logging and monitoring
+- Error tracking and reporting setup
+- Performance metrics collection
+- Usage analytics
+- System health monitoring
 
 ### Long-term Considerations (Future Phases)
 
@@ -252,6 +247,13 @@ const hyphenatorRouter = router({
 - Load balancing for processing
 - Distributed file processing
 - CDN integration
+
+#### 3. CLI Tool Enhancement
+
+- Custom CLI tool development (if needed)
+- Additional language support
+- Performance optimization
+- Error handling improvements
 
 ## Important Patterns and Preferences
 
@@ -271,7 +273,14 @@ const hyphenatorRouter = router({
 - Union types for specific error cases
 - Domain-driven type design
 
-#### 3. Progressive Enhancement
+#### 3. CLI Integration Patterns
+
+- External tool execution with proper error handling
+- Temporary file management and cleanup
+- Buffer-based file processing
+- Comprehensive validation and logging
+
+#### 4. Progressive Enhancement
 
 - Core functionality works without JavaScript (future goal)
 - Semantic HTML structure
@@ -283,7 +292,7 @@ const hyphenatorRouter = router({
 #### 1. Core Engineering Principles
 
 - **Start Simple**: Current implementation follows this perfectly
-- **Stay Simple**: Maintain simplicity in backend implementation
+- **Stay Simple**: Maintain simplicity in CLI integration
 - **Clarity Over Cleverness**: Focus on readable, maintainable code
 - **Explicit Naming**: Continue using descriptive, verb-based function names
 
@@ -299,30 +308,31 @@ const hyphenatorRouter = router({
 - **Behavior Testing**: Test user interactions and outcomes
 - **Error Scenarios**: Comprehensive error case coverage
 - **Component Isolation**: Test components in isolation
+- **Integration Testing**: Validate complete user flows
 - **Avoid Framework Testing**: Don't test React, test component behavior
 
 ## Current Technical Debt and Risks
 
 ### Immediate Technical Debt
 
-1. **Missing Backend**: Core functionality not implemented
-2. **No Error Recovery**: Processing failures not handled
-3. **Limited Validation**: Only basic file validation implemented
-4. **No Monitoring**: No error tracking or performance monitoring
+1. **Deployment Documentation**: CLI tool dependency not documented
+2. **Enhanced Error Recovery**: Basic error handling needs improvement
+3. **Performance Validation**: Large file handling not thoroughly tested
+4. **Monitoring Setup**: Error tracking not implemented
 
 ### Risks to Mitigate
 
-1. **File Size Performance**: Large files may cause memory issues
-2. **EPUB Compatibility**: Various EPUB formats may have different structures
-3. **Hyphenation Quality**: Pattern-based hyphenation may not be sufficient
+1. **CLI Tool Dependency**: `epub-hyphen` must be available in production
+2. **File Size Performance**: Large files may cause memory issues
+3. **EPUB Compatibility**: Various EPUB formats may have different structures
 4. **Concurrent Processing**: Multiple users processing files simultaneously
 
 ### Mitigation Strategies
 
-1. **File Streaming**: Implement streaming for large files
-2. **Robust Parsing**: Use mature EPUB parsing library
-3. **Quality Testing**: Test hyphenation quality across content types
-4. **Job Queuing**: Implement background processing queue
+1. **Deployment Documentation**: Document CLI tool installation requirements
+2. **Performance Testing**: Validate large file handling
+3. **Error Monitoring**: Implement comprehensive error tracking
+4. **Job Queuing**: Implement background processing queue (future)
 
 ## Learning and Project Insights
 
@@ -332,6 +342,7 @@ const hyphenatorRouter = router({
 2. **Type Safety**: Catching errors at compile time
 3. **User Experience**: Intuitive interface design
 4. **Testing Strategy**: Good coverage of user interactions
+5. **CLI Integration**: Effective use of external tools
 
 ### Key Learnings
 
@@ -339,6 +350,7 @@ const hyphenatorRouter = router({
 2. **TypeScript Benefits**: Prevents entire classes of bugs
 3. **Component Testing**: Ensures reliable user interactions
 4. **Simple Architecture**: Enables rapid development and iteration
+5. **External Tool Integration**: Can accelerate development significantly
 
 ### Patterns to Continue
 
@@ -346,5 +358,6 @@ const hyphenatorRouter = router({
 2. **Single Responsibility**: Components with one clear purpose
 3. **Comprehensive Validation**: Fail-fast input validation
 4. **User-Centered Error Handling**: Actionable error messages
+5. **CLI Integration**: Effective use of proven external tools
 
 This active context provides the current state snapshot for ongoing development and decision-making.

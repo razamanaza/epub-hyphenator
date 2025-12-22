@@ -39,11 +39,13 @@
 - **Server State**: TanStack Query (planned for API integration)
 - **Form State**: Controlled components with explicit state management
 
-#### Backend Framework (Planned)
+#### Backend Framework (Implemented)
 
-- **API Layer**: tRPC 11.4.3 (type-safe APIs)
+- **API Layer**: TanStack Start API routes (file-based routing)
 - **Server Runtime**: Nitro (comes with TanStack Start)
-- **Serialization**: SuperJSON 2.2.2 (for tRPC data transport)
+- **File Processing**: Node.js child process execution
+- **File Management**: Node.js filesystem operations
+- **Serialization**: SuperJSON 2.2.2 (available for future tRPC)
 
 ### Development Tooling
 
@@ -54,6 +56,13 @@
 - **Type Checking**: TypeScript strict mode
 - **Git Hooks**: Not configured (opportunity for improvement)
 
+#### External Dependencies
+
+- **CLI Tool**: `epub-hyphen` command-line utility
+- **Node.js APIs**: `child_process`, `fs`, `path`, `crypto`
+- **File Processing**: Buffer-based file handling
+- **Error Handling**: Comprehensive CLI error management
+
 #### Testing
 
 - **Framework**: Vitest 3.0.5
@@ -63,6 +72,7 @@
   - @testing-library/jest-dom 6.9.1
   - jsdom 27.0.0 (DOM environment)
 - **Test Setup**: Configured in src/test/setup.ts
+- **Coverage**: Frontend components tested, backend integration needs testing
 
 #### Build and Deployment
 
@@ -70,6 +80,7 @@
 - **TypeScript Paths**: vite-tsconfig-paths 5.1.4
 - **Preview**: Vite preview server for production testing
 - **Build Output**: Standard web assets (HTML, CSS, JS)
+- **Deployment Requirements**: `epub-hyphen` CLI tool installation
 
 ## Development Setup
 

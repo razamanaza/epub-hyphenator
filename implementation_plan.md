@@ -1,108 +1,94 @@
 # Implementation Plan
 
-## Overview
+[Overview]
+Replace console.log statements in src/routes/api/process-epub.ts with actual EPUB hyphenation processing using the epub-hyphen CLI tool.
 
-Create a TanStack Start API endpoint that accepts POST requests with multipart/form-data containing an EPUB file and language code, logs's information, and returns a placeholder response.
+This implementation will transform the current placeholder API endpoint into a fully functional EPUB processing pipeline that accepts uploaded EPUB files, applies language-specific hyphenation using the epub-hyphen tool, and returns processed files for download. The solution addresses the core functionality gap in the current codebase while maintaining existing validation patterns and error handling strategies.
 
-The implementation will leverage TanStack Start's built-in support for FormData processing and createFileRoute pattern for API endpoints. This follows the existing project architecture and integrates seamlessly with the current UploadForm component.
+[Types]
+Single sentence describing the type system changes.
 
-## Types
+No new types are required as the existing SupportedLanguage type ('en' | 'ru') is compatible with epub-hyphen's language code requirements.
 
-The endpoint will handle FormData with the following structure:
+[Files]
+Single sentence describing file modifications.
 
-- `file`: File object (EPUB file) - Binary file data with name, size, and type properties
-- `language`: string ('en' or 'ru') - Language code for hyphenation processing
+The implementation will modify only the existing src/routes/api/process-epub.ts file, adding file system operations and command execution logic.
 
-TypeScript interfaces will be defined for type safety:
+Detailed breakdown:
 
-```typescript
-interface ProcessEpubRequest {
-  file: File
-  language: 'en' | 'ru'
-}
+- **Modified file**: src/routes/api/process-epub.ts
+  - Add imports for Node.js modules: fs, path, crypto, child_process
+  - Replace console.log statements (lines 73-77) with actual processing logic
+  - Add temporary file creation and cleanup logic
+  - Add epub-hyphen command execution with error handling
+  - Modify response to return processed file for download
 
-interface ProcessEpubResponse {
-  message: string
-  success: boolean
-}
-```
+[Functions]
+Single sentence describing function modifications.
 
-## Files
+The implementation will add new utility functions for file operations and command execution while preserving existing validation functions.
 
-### New files to be created:
+Detailed breakdown:
 
-- `src/routes/api/process-epub.ts` - Main API endpoint handling FormData upload and validation
+- **New functions**:
+  - `createTempFilePath()`: Generates unique temporary file paths using timestamp and random string
+  - `writeFileToTemp()`: Writes uploaded File content to temporary filesystem location
+  - `executeEpubHyphen()`: Executes epub-hyphen command with proper error handling
+  - `readProcessedFile()`: Reads processed file content for response
+- **Modified functions**: None (existing validation functions remain unchanged)
+- **Removed functions**: None
 
-### Existing files to be modified:
+[Classes]
+Single sentence describing class modifications.
 
-- `src/components/UploadForm.tsx` - Update submitForm function to call new endpoint using FormData
+No class modifications are required as this implementation uses functional programming patterns.
 
-### Files to be deleted:
+Detailed breakdown:
 
-- `server/` directory and all contents - Remove obsolete directory as specified
+- **New classes**: None
+- **Modified classes**: None
+- **Removed classes**: None
 
-### Configuration file updates:
+[Dependencies]
+Single sentence describing dependency modifications.
 
-- No configuration files need modification
+No new npm dependencies are required as the implementation uses built-in Node.js modules.
 
-## Functions
+Detailed breakdown:
 
-### New functions:
+- **New packages**: None (using fs, path, crypto, child_process from Node.js core)
+- **Version changes**: None
+- **Integration requirements**: epub-hyphen CLI tool must be available in system PATH
 
-- `processEpub` server function in `src/routes/api/process-epub.ts`
-  - Signature: `createServerFn({ method: 'POST' }).inputValidator((data) => { ... }).handler(async ({ data }) => { ... })`
-  - Purpose: Handle FormData upload, validate file type and language, console log file info and language code
-  - Returns: JSON response with success message "Not implemented yet"
+[Testing]
+Single sentence describing testing approach.
 
-### Modified functions:
+Manual testing will be performed to verify file processing and error handling scenarios.
 
-- `submitForm` in `src/components/UploadForm.tsx`
-  - Current: Placeholder function that throws error about server integration
-  - Required changes: Replace with FormData creation and fetch to new endpoint
-  - Integration: Use existing file validation logic and language state
+Detailed breakdown:
 
-## Classes
+- **Test scenarios**:
+  - Successful processing with valid EPUB files (en and ru languages)
+  - Error handling for invalid language codes
+  - Error handling for epub-hyphen command failures
+  - File size validation and error responses
+  - Temporary file creation and persistence verification
+- **Existing test modifications**: None (no existing tests for this endpoint)
+- **Validation strategies**: Manual verification of processed file content and structure
 
-No new classes required. Implementation follows existing TanStack Start patterns using:
+[Implementation Order]
+Single sentence describing the implementation sequence.
 
-- `createFileRoute` for route definition
-- `createServerFn` for server function creation
-- Existing React component patterns
+The implementation will follow a logical sequence to ensure proper integration and error handling.
 
-## Dependencies
+Numbered steps showing the logical order of changes:
 
-No new dependencies required. Using existing project dependencies:
-
-- `@tanstack/react-start` (createServerFn, createFileRoute)
-- `@tanstack/react-router` (route utilities)
-- Built-in Node.js FormData API
-- Built-in browser FormData and fetch APIs
-
-## Testing
-
-### Test file requirements:
-
-- Endpoint testing with curl/postman for multipart upload
-- File size validation testing (50MB limit already implemented)
-- Language validation testing ('en'/'ru' already implemented)
-- Console logging verification
-
-### Existing test modifications:
-
-- No existing tests require modification
-- Current UploadForm tests will continue to work with updated implementation
-
-### Validation strategies:
-
-- FormData instance validation in inputValidator
-- File type validation (.epub extension)
-- Language code validation ('en' | 'ru')
-- File size validation (50MB limit)
-
-## Implementation Order
-
-1. Create `src/routes/api/process-epub.ts` endpoint with FormData handling and validation
-2. Update `src/components/UploadForm.tsx` submitForm function to call new endpoint using FormData
-3. Test complete integration between frontend form and backend endpoint
-4. Remove obsolete `server/` directory and contents
-5. Verify all functionality works as expected
+1. Add required Node.js module imports to the file
+2. Implement temporary file creation utility functions
+3. Implement file writing and reading functions
+4. Implement epub-hyphen command execution with error handling
+5. Replace console.log statements with processing pipeline
+6. Modify API response to return processed file
+7. Test with sample EPUB files for both languages
+8. Verify error handling for various failure scenarios

@@ -16,7 +16,8 @@ memory-bank/
 ├── systemPatterns.md       # Architecture and patterns
 ├── techContext.md          # Technical implementation details
 ├── activeContext.md        # Current work focus and decisions
-└── progress.md            # Implementation status and roadmap
+├── progress.md            # Implementation status and roadmap
+└── deployment.md          # Deployment and production setup
 ```
 
 ### Document Hierarchy
@@ -32,6 +33,7 @@ flowchart TD
     TC --> AC
 
     AC --> P[progress.md]
+    AC --> D[deployment.md]
 ```
 
 ## How to Use This Memory Bank
@@ -48,6 +50,7 @@ flowchart TD
    - `techContext.md` - Understand technical constraints
    - `activeContext.md` - Understand current work focus
    - `progress.md` - Understand what's built and what's needed
+   - `deployment.md` - Understand production requirements
 
 #### During Development
 
@@ -71,6 +74,7 @@ flowchart TD
 2. **Understand current state**: Review `progress.md` for what's built
 3. **Check active work**: Look at `activeContext.md` for current focus
 4. **Follow patterns**: Use `systemPatterns.md` for implementation guidance
+5. **Review deployment**: Check `deployment.md` for production requirements
 
 #### Development Workflow
 
@@ -125,11 +129,12 @@ This memory bank fully incorporates all global Cline rules:
 2. **Component-Driven**: Focused, single-responsibility components
 3. **Type-Safe**: Comprehensive TypeScript with explicit types
 4. **Test-Driven**: Unit tests for all core functionality
+5. **CLI Integration**: External tool execution with proper error handling
 
 ### Architectural Patterns
 
 1. **TanStack Start**: Modern React with SSR and file-based routing
-2. **tRPC Integration**: Type-safe API layer (planned)
+2. **CLI Tool Integration**: `epub-hyphen` for professional hyphenation
 3. **Functional Components**: Modern React with hooks
 4. **Domain-Driven Types**: Business-relevant type design
 
@@ -145,20 +150,22 @@ This memory bank fully incorporates all global Cline rules:
 ### Completed (✅)
 
 - **Frontend**: Upload form with validation, error handling, responsive design
+- **Backend**: Complete API endpoint with CLI tool integration
+- **Processing**: File upload, processing, and download functionality
 - **Testing**: Comprehensive unit tests for all components
 - **Tooling**: ESLint, Prettier, TypeScript, Vite configuration
 - **Documentation**: Complete memory bank establishment
 
 ### In Progress (🚧)
 
-- **Backend Integration**: Frontend ready, backend not implemented
-- **API Design**: tRPC structure planned, not implemented
+- **Deployment Preparation**: CLI tool dependency documentation
+- **Performance Testing**: Large file handling validation
+- **User Experience Polish**: Success feedback and enhanced progress indicators
 
 ### Not Started (❌)
 
-- **EPUB Processing**: Core hyphenation logic not built
-- **File Management**: Upload/download systems not implemented
-- **Server Infrastructure**: Backend processing pipeline not developed
+- **Monitoring Setup**: Error tracking and performance monitoring
+- **Advanced Features**: Custom hyphenation patterns, additional languages
 
 ## Decision Records
 
@@ -170,6 +177,7 @@ This memory bank contains decision records for:
 - **State Management**: React hooks for local, TanStack Query for server state
 - **Styling**: Tailwind CSS for utility-first approach
 - **Testing**: Vitest with React Testing Library
+- **CLI Integration**: `epub-hyphen` for professional EPUB processing
 
 ### Architectural Decisions
 
@@ -177,12 +185,14 @@ This memory bank contains decision records for:
 - **Type Design**: Domain-driven types over generic structures
 - **Error Handling**: Fail-fast validation with specific error types
 - **Development Approach**: Frontend-first to validate requirements early
+- **Processing Strategy**: External CLI tool vs. custom implementation
 
 ### Pattern Decisions
 
 - **Naming Conventions**: Descriptive verbs for functions, nouns for variables
 - **File Organization**: Feature-based component structure
 - **Import Patterns**: Grouped imports with type imports when possible
+- **CLI Integration**: External tool execution with proper error handling
 
 ## Maintenance Guidelines
 
@@ -194,12 +204,14 @@ This memory bank contains decision records for:
 2. **When making architectural decisions** - Update systemPatterns.md
 3. **When changing technical approach** - Update techContext.md
 4. **When shifting project focus** - Update activeContext.md
+5. **When adding deployment requirements** - Update deployment.md
 
 #### Optional Updates
 
 1. **Discovering new patterns** - Add to appropriate files
 2. **Learning new approaches** - Document in activeContext.md
 3. **User feedback** - Update productContext.md if needed
+4. **Deployment insights** - Add to deployment.md
 
 ### Update Process
 
@@ -260,3 +272,5 @@ This memory bank contains decision records for:
 This memory bank is the foundation for all EPUB Hyphenator development work. Maintain it carefully, update it regularly, and always reference it when making decisions about the project.
 
 **Remember**: The memory bank resets completely between Cline sessions. This documentation is the only link to previous work and must be maintained with precision and clarity.
+
+**New**: The `deployment.md` file provides comprehensive deployment guidance for production environments, including CLI tool installation requirements and server configuration.

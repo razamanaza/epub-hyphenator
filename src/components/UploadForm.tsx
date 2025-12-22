@@ -135,7 +135,11 @@ export default function UploadForm() {
 
         {error && <ErrorBanner error={error} />}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6"
+          data-testid="upload-form"
+        >
           {/* File Input */}
           <div>
             <label
@@ -155,7 +159,11 @@ export default function UploadForm() {
               />
               <label
                 htmlFor="file-input"
-                className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 transition-colors"
+                className={`flex items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                  isSubmitting
+                    ? 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                    : 'border-gray-300 hover:border-blue-400'
+                }`}
               >
                 <div className="text-center">
                   <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />

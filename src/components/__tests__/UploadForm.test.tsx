@@ -1,19 +1,12 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import UploadForm from '../UploadForm'
-
-// Mock the handleFormSubmit function
-vi.mock('../UploadForm', async () => {
-  const actual = await vi.importActual('../UploadForm')
-  return {
-    ...actual,
-    handleFormSubmit: vi.fn(),
-  }
-})
+import '@testing-library/jest-dom'
 
 describe('UploadForm', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.restoreAllMocks()
   })
 
   it('renders upload form with title and description', () => {
@@ -184,12 +177,19 @@ describe('UploadForm', () => {
     await waitFor(() => {
       expect(submitButton).toBeDisabled()
       expect(submitButton).toHaveTextContent('Processing...')
+      expect(fileInput).toBeDisabled()
     })
-
-    expect(fileInput).toBeDisabled()
   })
 
   it('shows error message when submission fails', async () => {
+    // Mock the fetch call to simulate API failure
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: false,
+        json: () => Promise.resolve({ error: 'Upload failed' }),
+      }),
+    ) as any
+
     render(<UploadForm />)
 
     const fileInput = screen.getByLabelText(/EPUB File/)
@@ -205,23 +205,24 @@ describe('UploadForm', () => {
     fireEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Server integration not yet implemented'),
-      ).toBeInTheDocument()
+      expect(screen.getByText('Upload failed')).toBeInTheDocument()
     })
   })
 
   it('validates file selection on submit', async () => {
     render(<UploadForm />)
 
-    // Submit without file to show error
-    const submitButton = screen.getByRole('button', {
-      name: /Upload & Process/,
-    })
-    fireEvent.click(submitButton)
+    // Test validation by directly calling the form submission
+    const form = screen.getByTestId('upload-form')
+    fireEvent.submit(form)
 
-    await waitFor(() => {
-      expect(screen.getByText('Please select an EPUB file')).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        expect(
+          screen.getByText('Please select an EPUB file'),
+        ).toBeInTheDocument()
+      },
+      { timeout: 2000 },
+    )
   })
 })

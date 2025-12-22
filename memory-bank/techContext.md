@@ -1,95 +1,308 @@
-# Technical Context
+# EPUB Hyphenator - Technical Context
 
 ## Technology Stack
 
-### Frontend Framework
+### Core Framework
 
-- **React 19**: Latest React with modern hooks and concurrent features
-- **TypeScript**: Type-safe development with strict typing
-- **TanStack Router**: File-based routing with type-safe navigation
-- **Tailwind CSS**: Utility-first CSS framework for responsive design
+#### TanStack Start
 
-### Backend & Full-Stack
+- **Version**: Latest (1.132.0 as of current implementation)
+- **Components**:
+  - React 19.2.0 (latest)
+  - TanStack Router 1.132.0 (file-based routing)
+  - TanStack Query 5.66.5 (server state management)
+  - TanStack Start 1.132.0 (SSR framework)
+- **Why Chosen**: Modern React ecosystem with excellent TypeScript support and built-in tooling
 
-- **TanStack Start**: Full-stack React framework with server functions
-- **Nitro**: Server engine for TanStack Start (provides API routes, SSR)
-- **tRPC**: Type-safe API layer between frontend and backend
+#### Development Environment
 
-### Development Tools
+- **Build Tool**: Vite 7.1.7
+- **TypeScript**: 5.7.2 with strict configuration
+- **Package Manager**: npm (as evidenced by package-lock.json)
+- **Node.js**: Required for development (version inferred from dependencies)
 
-- **Vite**: Fast build tool and development server
-- **Vitest**: Testing framework optimized for Vite
-- **ESLint + Prettier**: Code linting and formatting
-- **TypeScript**: Compiler and type checking
+### Frontend Technologies
 
-### External Dependencies
+#### UI Framework
 
-- **epub-hyphen**: Core hyphenation library (https://github.com/gromnitsky/epub-hyphen)
-  - Command-line tool for adding soft hyphens to EPUB files
-  - Supports multiple languages via `-l` parameter
-  - Processes EPUB files directly
+- **React**: 19.2.0 (functional components with hooks)
+- **Styling**: Tailwind CSS 4.0.6 with Vite integration
+- **Icons**: Lucide React 0.544.0
+- **Development Tools**:
+  - TanStack React Devtools 0.7.0
+  - TanStack Router Devtools 1.132.0
+  - TanStack Query Devtools 5.84.2
+
+#### State Management
+
+- **Local State**: React hooks (useState, useEffect)
+- **Server State**: TanStack Query (planned for API integration)
+- **Form State**: Controlled components with explicit state management
+
+#### Backend Framework (Planned)
+
+- **API Layer**: tRPC 11.4.3 (type-safe APIs)
+- **Server Runtime**: Nitro (comes with TanStack Start)
+- **Serialization**: SuperJSON 2.2.2 (for tRPC data transport)
+
+### Development Tooling
+
+#### Code Quality
+
+- **Linting**: ESLint with TanStack config (@tanstack/eslint-config 0.3.0)
+- **Formatting**: Prettier 3.5.3 with custom configuration
+- **Type Checking**: TypeScript strict mode
+- **Git Hooks**: Not configured (opportunity for improvement)
+
+#### Testing
+
+- **Framework**: Vitest 3.0.5
+- **Utilities**:
+  - @testing-library/react 16.2.0
+  - @testing-library/dom 10.4.0
+  - @testing-library/jest-dom 6.9.1
+  - jsdom 27.0.0 (DOM environment)
+- **Test Setup**: Configured in src/test/setup.ts
+
+#### Build and Deployment
+
+- **Bundler**: Vite with plugin-react 5.0.4
+- **TypeScript Paths**: vite-tsconfig-paths 5.1.4
+- **Preview**: Vite preview server for production testing
+- **Build Output**: Standard web assets (HTML, CSS, JS)
 
 ## Development Setup
-
-### Environment
-
-- **Node.js**: Required for running the development server and build process
-- **npm**: Package management and script execution
-- **Git**: Version control
-
-### Key Scripts
-
-```json
-{
-  "dev": "vite dev --port 3000",
-  "build": "vite build",
-  "preview": "vite preview",
-  "test": "vitest run",
-  "lint": "eslint",
-  "format": "prettier",
-  "check": "prettier --write . && eslint --fix"
-}
-```
 
 ### Project Structure
 
 ```
-src/
-├── routes/          # File-based routing (TanStack Router)
-├── components/      # Reusable React components
-├── integrations/    # External service integrations (tRPC, TanStack Query)
-├── data/           # Static data and demo content
-└── styles.css      # Global styles
+epub-hyphenator/
+├── public/                    # Static assets
+├── src/
+│   ├── components/           # React components
+│   │   ├── __tests__/        # Component tests
+│   │   ├── ErrorBanner.tsx   # Error display component
+│   │   └── UploadForm.tsx    # Main upload interface
+│   ├── integrations/         # Framework integrations
+│   │   ├── tanstack-query/   # Query configuration
+│   │   └── trpc/             # tRPC setup (placeholder)
+│   ├── routes/               # File-based routing
+│   │   ├── __root.tsx        # Layout component
+│   │   ├── index.tsx         # Home page
+│   │   └── api/              # API routes (future)
+│   ├── server/               # Server-side code
+│   ├── data/                 # Static data/mocks
+│   ├── test/                 # Test configuration
+│   ├── styles.css            # Global styles
+│   ├── router.tsx            # Router configuration
+│   └── routeTree.gen.ts      # Generated route definitions
+├── server/                   # Server implementation (separate)
+├── memory-bank/              # Project documentation
+├── package.json              # Dependencies and scripts
+├── tsconfig.json             # TypeScript configuration
+├── vite.config.ts            # Vite configuration
+├── vitest.config.ts          # Test configuration
+├── eslint.config.js          # Linting configuration
+├── prettier.config.js        # Formatting configuration
+└── README.md                 # Project documentation
 ```
 
-## Runtime Dependencies
+### Development Scripts
+
+```json
+{
+  "dev": "vite dev --port 3000",        # Development server
+  "build": "vite build",                 # Production build
+  "preview": "vite preview",             # Preview production build
+  "test": "vitest run",                  # Run all tests
+  "lint": "eslint",                      # Run linter
+  "format": "prettier",                  # Format code
+  "check": "prettier --write . && eslint --fix"  # Full code quality check
+}
+```
+
+### Configuration Files
+
+#### TypeScript (tsconfig.json)
+
+- Strict type checking enabled
+- Path aliases configured (via vite-tsconfig-paths)
+- Modern ES target with lib support
+- JSX transform configured for React
+
+#### Vite (vite.config.ts)
+
+- React plugin configured
+- TanStack Router plugin for file-based routing
+- Path aliases for clean imports
+- Dev server on port 3000
+
+#### ESLint (eslint.config.js)
+
+- TanStack ESLint configuration
+- React and TypeScript rules
+- Import/export validation
+
+#### Prettier (prettier.config.js)
+
+- Custom formatting rules
+- Consistent with TanStack defaults
+- Semi-colon and quote style enforcement
+
+## Technical Constraints and Requirements
+
+### Browser Support
+
+- **Modern Browsers**: ES2020+ support required
+- **File API**: Required for EPUB file handling
+- **Blob API**: Required for file download functionality
+- **Fetch API**: Required for API communication
+
+### Performance Requirements
+
+- **File Size Limit**: 50MB maximum upload size
+- **Memory Usage**: Efficient handling of large files
+- **Response Time**: <3 seconds for typical processing
+- **Bundle Size**: Optimized for fast initial load
+
+### Security Considerations
+
+- **File Upload**: Type and size validation
+- **Content Security**: CSP headers in production
+- **API Security**: Rate limiting and input validation
+- **File Storage**: Temporary file handling with cleanup
+
+### Accessibility Requirements
+
+- **WCAG 2.1**: AA compliance minimum
+- **Keyboard Navigation**: Full keyboard support
+- **Screen Reader**: Proper ARIA labels and semantic HTML
+- **Color Contrast**: Meeting contrast ratio requirements
+
+## Development Patterns and Standards
+
+### Code Organization Standards
+
+- **Component First**: Feature-based component organization
+- **Explicit Typing**: All functions and variables explicitly typed
+- **Single Responsibility**: Each component/function has one purpose
+- **Test Coverage**: Core logic must have unit tests
+
+### Naming Conventions (Following Global Rules)
+
+- **Components**: PascalCase (UploadForm, ErrorBanner)
+- **Functions**: camelCase with verbs (handleSubmit, validateFile)
+- **Variables**: camelCase with descriptive nouns (formData, isSubmitting)
+- **Types**: PascalCase for interfaces/types (UploadFormData, Language)
+- **Constants**: UPPER_SNAKE_CASE (MAX_FILE_SIZE)
+
+### Import Patterns
+
+- **Framework Imports**: Grouped at top
+- **Component Imports**: Local components next
+- **Utility Imports**: Third-party utilities last
+- **Type Imports**: Use `import type` when possible
+
+### Error Handling Patterns
+
+- **Validation Errors**: Specific error types with actionable messages
+- **API Errors**: Graceful degradation with user feedback
+- **Network Errors**: Retry mechanisms where appropriate
+- **Unexpected Errors**: Generic fallback with logging
+
+## Dependencies Analysis
 
 ### Production Dependencies
 
-- React ecosystem (Router, Query, Start)
-- UI libraries (Lucide React for icons)
-- Server utilities (tRPC, SuperJSON, Nitro)
-- Styling (Tailwind CSS)
+```typescript
+// Core framework
+"@tanstack/react-start": "^1.132.0"     // Main framework
+"react": "^19.2.0"                       // UI library
+"react-dom": "^19.2.0"                   // DOM renderer
+
+// State management and routing
+"@tanstack/react-router": "^1.132.0"    // Type-safe routing
+"@tanstack/react-query": "^5.66.5"      // Server state
+"@tanstack/router-ssr-query": "^1.131.7" // SSR integration
+
+// Backend (planned)
+"@trpc/client": "^11.4.3"               // API client
+"@trpc/server": "^11.4.3"               // API server
+"@trpc/tanstack-react-query": "^11.4.3"  // tRPC + React Query
+
+// UI and styling
+"@tailwindcss/vite": "^4.0.6"            // Tailwind Vite plugin
+"tailwindcss": "^4.0.6"                  // CSS framework
+"lucide-react": "^0.544.0"              // Icon library
+
+// Utilities
+"superjson": "^2.2.2"                    // Serialization for tRPC
+"zod": "^4.1.11"                         // Schema validation
+```
 
 ### Development Dependencies
 
-- Type checking (TypeScript)
-- Testing (Vitest, Testing Library)
-- Linting/Formatting (ESLint, Prettier)
-- Build tools (Vite, various plugins)
+```typescript
+// Build tools
+"vite": "^7.1.7"                         // Build tool
+"@vitejs/plugin-react": "^5.0.4"         // React plugin
+"vite-tsconfig-paths": "^5.1.4"         // Path aliases
 
-## epub-hyphen Integration
+// Code quality
+"@tanstack/eslint-config": "^0.3.0"      // ESLint config
+"prettier": "^3.5.3"                     // Code formatter
 
-The core processing relies on the `epub-hyphen` command-line tool:
+// Testing
+"vitest": "^3.0.5"                       // Test runner
+"@testing-library/react": "^16.2.0"      // React testing
+"@testing-library/dom": "^10.4.0"        // DOM testing
+"@testing-library/jest-dom": "^6.9.1"   // Test utilities
+"jsdom": "^27.0.0"                       // DOM environment
 
-- Installed as a system dependency (not npm package)
-- Executed server-side via TanStack Start server functions
-- Language parameter passed as `-l` flag
-- Input/output file handling managed by the application
+// Type definitions
+"@types/react": "^19.2.0"                // React types
+"@types/react-dom": "^19.2.0"            // React DOM types
+"@types/node": "^22.10.2"                // Node.js types
+"typescript": "^5.7.2"                   // TypeScript compiler
+```
 
-## Deployment Considerations
+## Environment Variables and Configuration
 
-- **Static hosting**: Frontend can be deployed to any static host
-- **Server requirements**: Backend needs Node.js environment that can execute system commands
-- **File processing**: Server must have epub-hyphen installed and accessible
-- **Security**: File upload handling requires proper validation and temporary file management
+### Development Environment
+
+- **Dev Server**: localhost:3000
+- **Hot Reload**: Enabled by Vite
+- **Source Maps**: Enabled for debugging
+- **API Proxy**: Configured for development backend
+
+### Production Considerations
+
+- **Build Optimization**: Code splitting and minification
+- **Asset Optimization**: Image and font optimization
+- **Caching Headers**: Static asset caching strategy
+- **Environment Variables**: Production-specific configuration
+
+## Technical Debt and Improvement Opportunities
+
+### Immediate Improvements
+
+1. **Git Hooks**: Pre-commit hooks for linting and testing
+2. **Error Boundaries**: React error boundaries for better UX
+3. **Loading States**: Skeleton screens during file processing
+4. **Accessibility**: ARIA labels and keyboard navigation improvements
+
+### Medium-term Enhancements
+
+1. **Performance**: File streaming for large uploads
+2. **Testing**: Integration tests for full user flows
+3. **Monitoring**: Error tracking and performance monitoring
+4. **Documentation**: API documentation and component storybook
+
+### Long-term Considerations
+
+1. **Monorepo**: Separate frontend and backend packages
+2. **Microservices**: Specialized processing services
+3. **CDN**: Content delivery network for static assets
+4. **Caching**: Redis or similar for processed files
+
+This technical context provides the foundation for understanding the current implementation and planning future technical decisions.

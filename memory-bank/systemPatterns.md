@@ -1,141 +1,304 @@
-# System Patterns & Architecture
+# EPUB Hyphenator - System Patterns
 
-## Application Architecture
+## System Architecture Overview
 
-### Full-Stack Pattern: TanStack Start
-
-- **Single Framework**: TanStack Start provides both frontend and backend in one cohesive system
-- **Server Functions**: Client can call server-side functions directly, eliminating separate API endpoints
-- **Type Safety**: End-to-end TypeScript ensures frontend and backend stay in sync
-- **File-based Routing**: Routes defined as files, automatically generating type-safe navigation
-
-### Component Architecture
+### High-Level Architecture
 
 ```
-Frontend (SPA)
-├── Upload Form Component
-│   ├── File Input (EPUB only)
-│   ├── Language Selector (English/Russian)
-│   └── Submit Button
-├── Processing Status Display
-├── Error Banner Component
-└── Download Handler
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │   Backend       │    │   Processing    │
+│   (React)       │    │   (tRPC/Nitro)  │    │   Engine        │
+│                 │    │                 │    │                 │
+│ • UploadForm    │◄──►│ • File Handler  │◄──►│ • EPUB Parser   │
+│ • Validation    │    │ • Validation    │    │ • Hyphenator    │
+│ • UI Feedback   │    │ • Processing    │    │ • File Builder  │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-### Data Flow Pattern
+### Current State (MVP Phase)
 
-```
-1. User selects EPUB file + language
-2. File uploaded to server function
-3. Server validates file type
-4. Server executes epub-hyphen command
-5. Server returns processed file or error
-6. Frontend triggers download or shows error
-```
+- **Frontend Only**: React-based upload interface with validation
+- **Mock Backend**: Form submission currently throws "not implemented" error
+- **Processing Pipeline**: Designed but not yet implemented
 
 ## Key Technical Decisions
 
-### File Processing Strategy
+### 1. Framework Choice: TanStack Start
 
-- **Server-side execution**: epub-hyphen runs on server to avoid browser limitations
-- **Temporary files**: Input files stored temporarily during processing
-- **Direct streaming**: Processed files streamed directly to client for download
-- **Cleanup**: Temporary files removed after processing
+**Decision**: Use TanStack Start (React + SSR + File-based routing)
 
-### Error Handling Patterns
+**Rationale**:
 
-- **Validation first**: File type and size validation before processing
-- **Command execution**: Capture stderr/stdout from epub-hyphen for error reporting
-- **User feedback**: Clear error messages with actionable context
-- **Graceful degradation**: UI remains functional even when backend fails
+- Modern React 19 with server-side rendering capabilities
+- Built-in file-based routing reduces boilerplate
+- Integrated TanStack Query for data fetching
+- Excellent TypeScript support
+- Aligns with global Cline preferences for modern frameworks
 
-### State Management
+**Benefits**:
 
-- **Local component state**: Form inputs and loading states managed locally
-- **Server state**: TanStack Query handles server function calls and caching
-- **Error state**: Global error state for banner display
+- SEO-friendly with SSR
+- Type-safe routing
+- Built-in development tools
+- Excellent performance
 
-## Security Considerations
+### 2. State Management: React Hooks + TanStack Query
 
-### File Upload Security
+**Decision**: Use local React hooks for form state, TanStack Query for server state
 
-- **Type validation**: Only .epub files accepted
-- **Size limits**: Reasonable file size restrictions
-- **Path safety**: Secure temporary file handling
-- **No execution**: Uploaded files never executed, only processed
+**Rationale**:
 
-### Server Function Security
+- Simple form state doesn't require complex state management
+- TanStack Query provides excellent server state handling
+- Follows global engineering principle of "start simple, stay simple"
+- Type-safe and well-tested
 
-- **Input validation**: All inputs validated before processing
-- **Command injection prevention**: Language parameter sanitized
-- **Resource limits**: Processing timeouts and resource constraints
-
-## Component Patterns
-
-### Form Component Pattern
+**Implementation Pattern**:
 
 ```typescript
-// Controlled form with validation
-const [file, setFile] = useState<File | null>(null)
-const [language, setLanguage] = useState<'en' | 'ru'>('en')
-const [isProcessing, setIsProcessing] = useState(false)
+// Local form state
+const [formData, setFormData] = useState<UploadFormData>({
+  file: null,
+  language: 'en',
+})
+
+// Server state (future implementation)
+const { mutate: processFile, isPending } = useMutation({
+  mutationFn: submitForm,
+  onSuccess: handleSuccess,
+  onError: handleError,
+})
 ```
 
-### Server Function Pattern
+### 3. Component Architecture: Functional Components
+
+**Decision**: Use functional React components with hooks
+
+**Rationale**:
+
+- Aligns with modern React patterns
+- Better TypeScript inference
+- Simpler testing with Vitest
+- Follows global preference for functional over class-based components
+
+**Component Structure**:
 
 ```typescript
-// Type-safe server function
-export const processEpub = createServerFn()
-  .validator(
-    z.object({ file: z.instanceof(File), language: z.enum(['en', 'ru']) }),
+// Domain-specific component
+export default function UploadForm() {
+  // State and logic
+  const [formData, setFormData] = useState<UploadFormData>({})
+
+  // Event handlers
+  const handleSubmit = async (event: React.FormEvent) => {
+    // Implementation
+  }
+
+  // Render
+  return (
+    <div className="max-w-2xl mx-auto">
+      {/* JSX */}
+    </div>
   )
-  .handler(async ({ file, language }) => {
-    // Process file and return result
-  })
+}
 ```
 
-### Error Display Pattern
+### 4. Type System: Explicit Domain Types
+
+**Decision**: Define explicit domain types for all data structures
+
+**Rationale**:
+
+- Follows global TypeScript rules for explicit typing
+- Prevents implicit any usage
+- Improves code documentation and IDE support
+- Enables compile-time error detection
+
+**Type Patterns**:
 
 ```typescript
-// Consistent error UI
-const [error, setError] = useState<string | null>(null)
-// Show error banner when error exists
-{error && <ErrorBanner message={error} onDismiss={() => setError(null)} />}
+// Domain types
+type Language = 'en' | 'ru'
+
+interface UploadFormData {
+  file: File | null
+  language: Language
+}
+
+// Error types (union types for specific errors)
+type FormValidationError =
+  | 'no-file'
+  | 'invalid-file-type'
+  | 'file-too-large'
+  | 'unknown-error'
 ```
 
-## File Handling Patterns
+### 5. Styling: Tailwind CSS with Utility Classes
 
-### Upload Processing
+**Decision**: Use Tailwind CSS for styling
 
-- Accept only .epub MIME type
-- Validate file extension
-- Check file size limits
-- Generate unique temporary filenames
+**Rationale**:
 
-### Download Handling
+- Consistent with TanStack Start setup
+- Utility-first approach reduces custom CSS
+- Excellent responsive design support
+- Aligns with modern frontend practices
 
-- Set appropriate Content-Type headers
-- Use original filename for download
-- Handle large file streaming
-- Clean up server resources
+**Styling Patterns**:
 
-## Development Patterns
+```typescript
+// Component styling
+<div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
+  <div className="text-center mb-8">
+    <Upload className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+  </div>
+</div>
 
-### Code Organization
+// Conditional styling
+<button className={`p-4 border rounded-lg transition-colors ${
+  isSelected
+    ? 'border-blue-500 bg-blue-50 text-blue-700'
+    : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+}`}>
+```
 
-- **Feature-based**: Components grouped by functionality
-- **Type safety**: Strict TypeScript with no `any` usage
-- **Consistent naming**: Clear, descriptive function and variable names
-- **Single responsibility**: Each component/function has one clear purpose
+## Component Relationships
 
-### Testing Strategy
+### Current Component Structure
 
-- **Unit tests**: Individual functions and components
-- **Integration tests**: Server function interactions
-- **E2E tests**: Complete user workflows (future)
+```
+src/
+├── components/
+│   ├── UploadForm.tsx          # Main upload interface
+│   ├── ErrorBanner.tsx         # Reusable error display
+│   └── __tests__/
+│       ├── UploadForm.test.tsx # Component tests
+│       └── ErrorBanner.test.tsx
+├── routes/
+│   ├── __root.tsx              # Layout wrapper
+│   └── index.tsx               # Home page (uses UploadForm)
+```
 
-### Build & Deployment
+### Data Flow Patterns
 
-- **Development**: Hot reload with Vite dev server
-- **Production**: Static generation where possible, server functions for dynamic content
-- **CI/CD**: Automated testing and building on commits
+#### 1. Form Data Flow
+
+```
+User Input → UploadForm State → Validation → Submit → API Call
+     ↓              ↓              ↓           ↓        ↓
+  Event Handler   useState      validateFile   submitForm  Server
+```
+
+#### 2. Error Handling Flow
+
+```
+Validation Error → Error State → ErrorBanner Display → User Action
+       ↓                ↓              ↓                 ↓
+   validateFile    setError         render         Correct Input
+```
+
+#### 3. File Processing Flow (Future)
+
+```
+File Upload → File Validation → tRPC API → EPUB Processing → Download
+     ↓              ↓              ↓          ↓              ↓
+  UploadForm    validateFile   backend.ts  hyphenate()   FileResponse
+```
+
+## Design Patterns in Use
+
+### 1. Single Responsibility Principle
+
+Each component has a single, well-defined purpose:
+
+- `UploadForm`: Form handling and submission
+- `ErrorBanner`: Error display and dismissal
+- `validateEpubFile`: File validation logic
+
+### 2. Dependency Inversion
+
+Components depend on abstractions, not concretions:
+
+- Form validation is extracted to separate function
+- Error handling is abstracted through `ErrorBanner` component
+- Future API calls will be abstracted through tRPC
+
+### 3. Fail-Fast Validation
+
+Input validation happens immediately, preventing invalid states:
+
+- File type checked on selection
+- File size validated before upload
+- Form completeness checked before submission
+
+### 4. Progressive Enhancement
+
+Form works without JavaScript (future enhancement consideration):
+
+- Semantic HTML structure
+- Form validation on both client and server (planned)
+- Accessible markup patterns
+
+## Testing Patterns
+
+### 1. Component Testing with Vitest
+
+- Test user interactions and state changes
+- Test validation logic
+- Test error conditions
+- Mock external dependencies
+
+### 2. Test Organization
+
+```
+src/components/__tests__/
+├── UploadForm.test.tsx     # Component behavior tests
+└── ErrorBanner.test.tsx    # Error display tests
+```
+
+### 3. Testing Patterns
+
+```typescript
+// Component interaction testing
+test('updates file selection when file is chosen', async () => {
+  const file = new File(['test'], 'test.epub', { type: 'application/epub' })
+
+  render(<UploadForm />)
+
+  const fileInput = screen.getByLabelText(/EPUB File/i)
+  await userEvent.upload(fileInput, file)
+
+  expect(screen.getByText('test.epub')).toBeInTheDocument()
+})
+```
+
+## Future Architecture Considerations
+
+### 1. API Layer (tRPC)
+
+- Type-safe API calls
+- Automatic client generation
+- Built-in error handling
+- Middleware support for logging/auth
+
+### 2. File Processing Pipeline
+
+- EPUB parsing with dedicated library
+- Text extraction and hyphenation
+- File reconstruction with proper structure
+- Temporary file management
+
+### 3. Performance Optimizations
+
+- File streaming for large uploads
+- Background processing with job queue
+- Caching of hyphenation patterns
+- Compression for processed files
+
+### 4. Error Recovery
+
+- Retry mechanisms for failed processing
+- Partial processing for corrupted files
+- User notification system for long-running jobs
+
+This system architecture provides a solid foundation for the MVP while allowing for future expansion and optimization.

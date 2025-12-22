@@ -1,53 +1,164 @@
-# Product Context: EPUB Hyphenation Tool
+# EPUB Hyphenator - Product Context
 
-## Why This Tool Exists
+## Why This Project Exists
 
-EPUB files are widely used for e-books and digital publications, but many EPUB creation tools don't include proper hyphenation. This leads to poor text flow and readability, especially on smaller screens or when text is justified. Manual hyphenation is time-consuming and error-prone, particularly for long documents.
+### The Problem
 
-## Problems Solved
+EPUB files often lack proper hyphenation, leading to poor typography and reduced readability, especially in justified text layouts. This is particularly problematic for:
 
-### Reading Experience Issues
+- **Print-on-demand books** where typography quality directly impacts sales
+- **Academic publications** where readability affects comprehension
+- **Digital reading experiences** where poor formatting can cause user frustration
+- **Multi-language content** where hyphenation patterns differ significantly
 
-- **Poor text wrapping**: Words that don't fit on a line break awkwardly or extend beyond screen boundaries
-- **Justification problems**: Unhyphenated text creates large gaps in justified layouts
-- **Mobile readability**: Small screens exacerbate text flow issues without hyphenation
+### The Solution
 
-### Content Creation Challenges
+EPUB Hyphenator provides a simple, web-based solution for applying professional-grade hyphenation to EPUB files without requiring specialized typography software or technical expertise.
 
-- **Manual labor**: Adding hyphens manually to entire books is impractical
-- **Inconsistency**: Different authors/editors use different hyphenation rules
-- **Language complexity**: Proper hyphenation requires language-specific rules
+## Target User Personas
 
-### Publishing Workflow Gaps
+### Primary Users
 
-- **Tool limitations**: Many EPUB creation tools lack built-in hyphenation
-- **Post-processing needs**: Publishers need easy ways to enhance existing EPUB files
-- **Quality standards**: Professional publications require proper text formatting
+1. **The Publisher** (Sarah, 35)
+   - Manages multiple book publications
+   - Needs consistent quality across formats
+   - Values speed and reliability
+   - Technical comfort: Moderate
 
-## Target Users
+2. **The Indie Author** (Alex, 42)
+   - Self-publishes multiple titles
+   - Budget-conscious but quality-focused
+   - Works with tight deadlines
+   - Technical comfort: Low to moderate
 
-### Self-Publishers
+3. **The Developer** (Jordan, 28)
+   - Builds publishing workflows
+   - Needs programmatic access to hyphenation
+   - Values API consistency and documentation
+   - Technical comfort: High
 
-Authors and indie publishers who want to improve their EPUB formatting without complex software.
+### Secondary Users
 
-### Content Creators
+4. **The Academic** (Dr. Chen, 55)
+   - Publishes research papers and books
+   - Needs precise typography for citations and references
+   - Works with multilingual content
+   - Technical comfort: Moderate
 
-Bloggers, educators, and content creators who distribute materials in EPUB format.
+5. **The Typography Enthusiast** (Maria, 31)
+   - Cares deeply about text appearance
+   - Experiments with different layout options
+   - Values fine-grained control
+   - Technical comfort: High
 
-### Publishers
+## User Experience Goals
 
-Traditional and digital publishers who need to enhance existing EPUB files for better reader experience.
+### Core Experience Principles
 
-## Value Proposition
+1. **Simplicity First**
+   - Upload, select, process, download
+   - No unnecessary steps or options
+   - Clear visual feedback at each stage
 
-This tool provides a simple, web-based solution for EPUB hyphenation that:
+2. **Instant Confidence**
+   - File validation before upload
+   - Clear error messages with actionable guidance
+   - Progress indicators for processing
 
-- Works entirely in the browser (frontend) with server-side processing
-- Supports multiple languages (English, Russian)
-- Maintains file integrity and naming
-- Provides clear error feedback
-- Requires no software installation or complex setup
+3. **Professional Quality**
+   - Industry-standard hyphenation patterns
+   - Preservation of EPUB structure and metadata
+   - Consistent results across platforms
 
-## Market Context
+### Success Metrics
 
-The EPUB format continues to grow in popularity for digital books, educational materials, and documentation. As screen sizes diversify and reading devices become more sophisticated, proper text formatting becomes increasingly important for user experience. This tool fills a specific gap in the EPUB processing toolchain.
+#### User Success
+
+- **Task Completion Rate**: >95% of uploads result in successful processing
+- **Time to Success**: <3 minutes from upload to download for typical files
+- **Error Recovery**: >90% of users successfully resolve validation errors
+
+#### Quality Metrics
+
+- **Typography Quality**: Measurable improvement in rag and justification
+- **File Integrity**: 100% preservation of EPUB structure and metadata
+- **Cross-platform Consistency**: Identical results across reading devices
+
+#### User Satisfaction
+
+- **Net Promoter Score**: >8/10
+- **User Retention**: >70% of users return for additional processing
+- **Support Tickets**: <5% of users require support
+
+## How It Should Work
+
+### Ideal User Journey
+
+1. **Discovery**
+   - User lands on clean, focused landing page
+   - Clear value proposition visible immediately
+   - No registration required for basic use
+
+2. **Upload**
+   - Drag-and-drop or click-to-select file upload
+   - Immediate validation feedback
+   - File size and format requirements clearly stated
+
+3. **Configuration**
+   - Simple language selection (English/Russian)
+   - Preview of selected options
+   - Clear indication of what will happen
+
+4. **Processing**
+   - Real-time progress indicator
+   - Estimated completion time
+   - Option to cancel if needed
+
+5. **Download**
+   - Automatic download start or clear download button
+   - File naming convention includes processing info
+   - Option to process additional files
+
+### Error Handling Philosophy
+
+- **Preventive**: Catch errors before they happen with validation
+- **Informative**: Explain what went wrong and how to fix it
+- **Recoverable**: Guide users back to successful completion
+- **Respectful**: Never blame the user for errors
+
+## Competitive Landscape
+
+### Direct Alternatives
+
+- **Calibre**: Desktop application, complex interface
+- **Sigil**: EPUB editor, steep learning curve
+- **InDesign**: Professional publishing, expensive
+
+### Differentiators
+
+- **Web-based**: No installation required
+- **Specialized**: Focused solely on hyphenation
+- **Simple**: Minimal learning curve
+- **Fast**: Optimized for this specific task
+
+## Future Product Vision
+
+### Phase 1: MVP (Current Focus)
+
+- Basic upload and processing
+- English and Russian support
+- Web-based interface
+
+### Phase 2: Expansion
+
+- Additional languages
+- Batch processing
+- API access for developers
+
+### Phase 3: Advanced Features
+
+- Custom hyphenation patterns
+- Integration with publishing platforms
+- Real-time preview capabilities
+
+This context guides all feature decisions and prioritization for the EPUB Hyphenator project.

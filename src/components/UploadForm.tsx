@@ -33,17 +33,17 @@ function validateEpubFile(file: File | null): string | null {
   return null
 }
 
-async function handleFormSubmit(data: UploadFormData): Promise<void> {
-  if (!data.file) {
+async function submitForm(uploadRequest: UploadFormData): Promise<void> {
+  if (!uploadRequest.file) {
     throw new Error('No file selected')
   }
 
   // Placeholder for future server integration
   console.log(
     'Submitting file:',
-    data.file.name,
+    uploadRequest.file.name,
     'with language:',
-    data.language,
+    uploadRequest.language,
   )
 
   // Simulate API call delay
@@ -88,7 +88,7 @@ export default function UploadForm() {
 
     setIsSubmitting(true)
     try {
-      await handleFormSubmit(formData)
+      await submitForm(formData)
       // Success handling would go here
     } catch (err) {
       setError(

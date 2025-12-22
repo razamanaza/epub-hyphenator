@@ -27,9 +27,9 @@ BEFORE suggesting code using ANY of these libraries, MUST use Context7:
 ```javascript
 use_mcp_tool({
   server_name: 'context7',
-  tool_name: 'cEdhNd0mcp0resolve-library-id',
+  tool_name: 'resolve-library-id',
   arguments: {
-    library_name: 'react',
+    libraryName: 'react',
   },
 })
 ```
@@ -39,9 +39,9 @@ use_mcp_tool({
 ```javascript
 use_mcp_tool({
   server_name: 'context7',
-  tool_name: 'cEdhNd0mcp0get-library-docs',
+  tool_name: 'get-library-docs',
   arguments: {
-    library_id: 'from_step_1',
+    context7CompatibleLibraryID: 'from_step_1',
     topic: 'useState hook patterns',
   },
 })
@@ -72,15 +72,15 @@ use_mcp_tool({
 // Use Context7 first
 use_mcp_tool({
   server_name: 'context7',
-  tool_name: 'cEdhNd0mcp0resolve-library-id',
-  arguments: { library_name: 'react' },
+  tool_name: 'resolve-library-id',
+  arguments: { libraryName: 'react' },
 })
 // Then get docs for useState
 use_mcp_tool({
   server_name: 'context7',
-  tool_name: 'cEdhNd0mcp0get-library-docs',
+  tool_name: 'get-library-docs',
   arguments: {
-    library_id: '...',
+    context7CompatibleLibraryID: '/reactjs/react.dev',
     topic: 'useState hook patterns',
   },
 })
@@ -104,8 +104,8 @@ const [count, setCount] = useState(0) // No explicit typing
 
 Before presenting code, I MUST:
 
-- [ ] Used `cEdhNd0mcp0resolve-library-id` for each unfamiliar library
-- [ ] Used `cEdhNd0mcp0get-library-docs` for relevant topics
+- [ ] Used `resolve-library-id` for each unfamiliar library
+- [ ] Used `get-library-docs` for relevant topics
 - [ ] Based implementation on Context7, not training data
 - [ ] Documented Context7 sources used
 

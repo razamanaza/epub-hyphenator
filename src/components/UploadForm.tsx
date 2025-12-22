@@ -38,19 +38,39 @@ async function submitForm(uploadRequest: UploadFormData): Promise<void> {
     throw new Error('No file selected')
   }
 
-  // Placeholder for future server integration
-  console.log(
-    'Submitting file:',
-    uploadRequest.file.name,
-    'with language:',
-    uploadRequest.language,
-  )
+  // Create FormData for multipart/form-data upload
+  const formData = new FormData()
+  formData.append('file', uploadRequest.file)
+  formData.append('language', uploadRequest.language)
 
-  // Simulate API call delay
-  await new Promise((resolve) => setTimeout(resolve, 1000))
+  try {
+    const response = await fetch('/api/process-epub', {
+      method: 'POST',
+      body: formData,
+    })
 
-  // For now, just throw an error to show the form works
-  throw new Error('Server integration not yet implemented')
+    const result = await response.json()
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Upload failed')
+    }
+
+    if (!result.success) {
+      throw new Error(result.error || 'Processing failed')
+    }
+
+    // For now, just log the success message
+    console.log('Upload successful:', result.message)
+
+    // You could show a success message here instead of throwing an error
+    // For now, we'll throw the message to show it works
+    throw new Error(result.message)
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error
+    }
+    throw new Error('An unexpected error occurred during upload')
+  }
 }
 
 export default function UploadForm() {

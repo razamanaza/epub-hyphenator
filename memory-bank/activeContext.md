@@ -9,9 +9,9 @@ Complete the MVP implementation of the EPUB Hyphenator by implementing the serve
 ### Current Implementation Status
 
 - **Frontend**: ✅ Complete (upload form, validation, UI)
-- **Backend**: ❌ Not Implemented (placeholder throwing error)
-- **Processing**: ❌ Not Implemented (EPUB hyphenation logic)
-- **Testing**: ✅ Frontend unit tests complete
+- **Backend**: 🚧 Foundation Started (API endpoint implemented, file handling working)
+- **Processing**: ⏸️ Logging Complete (file info logged, hyphenation pending)
+- **Testing**: ✅ Frontend unit tests complete + API endpoint tested
 
 ### Immediate Tasks
 
@@ -35,6 +35,7 @@ The project has evolved from a generic TanStack template to a focused EPUB hyphe
    - Language selection (English/Russian)
    - Loading states and error handling
    - Responsive design with Tailwind CSS
+   - **API Integration**: Connected to `/api/process-epub` endpoint ✅
 
 2. **ErrorBanner.tsx** - Reusable error display component:
    - Dismissible error messages
@@ -46,6 +47,13 @@ The project has evolved from a generic TanStack template to a focused EPUB hyphe
    - User interactions
    - Error scenarios
    - Component behavior
+
+4. **API Endpoint** - `src/routes/api/process-epub.ts` - Functional backend:
+   - POST handler for multipart/form-data
+   - File validation (type, size, language)
+   - Console logging of file information
+   - JSON responses with proper error handling
+   - TanStack Start route pattern integration ✅
 
 #### Technical Decisions Made
 

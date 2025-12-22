@@ -17,9 +17,9 @@
 
 ### Current State (MVP Phase)
 
-- **Frontend Only**: React-based upload interface with validation
-- **Mock Backend**: Form submission currently throws "not implemented" error
-- **Processing Pipeline**: Designed but not yet implemented
+- **Frontend Complete**: React-based upload interface with validation
+- **Backend Foundation**: API endpoint implemented with file handling
+- **Processing Pipeline**: File validation and logging complete, hyphenation pending
 
 ## Key Technical Decisions
 
@@ -270,6 +270,71 @@ test('updates file selection when file is chosen', async () => {
 
   expect(screen.getByText('test.epub')).toBeInTheDocument()
 })
+```
+
+## Current Implementation Patterns
+
+### 1. TanStack Start API Routes
+
+- **File-based Routing**: API routes defined in `src/routes/api/` directory
+- **createFileRoute Pattern**: Route definition with server handlers
+- **FormData Handling**: Built-in multipart form data parsing
+- **JSON Responses**: Standardized response format with status codes
+
+```typescript
+// API Route Pattern
+export const Route = createFileRoute('/api/process-epub')({
+  server: {
+    handlers: {
+      POST: async ({ request }) => {
+        const formData = await request.formData()
+        // Validation and processing logic
+        return json({ message: 'Not implemented yet', success: true })
+      },
+    },
+  },
+})
+```
+
+### 2. Input Validation Pattern
+
+- **File Type Validation**: Extension checking for EPUB files
+- **Size Validation**: 50MB file size limits
+- **Language Validation**: Enum validation for 'en' | 'ru'
+- **Error Responses**: Consistent error format with status codes
+
+```typescript
+// Validation Pattern
+if (!file.name.toLowerCase().endsWith('.epub')) {
+  return json(
+    {
+      error: 'Invalid file type. Only EPUB files are allowed',
+      success: false,
+    },
+    { status: 400 },
+  )
+}
+```
+
+### 3. Frontend-Backend Integration
+
+- **Fetch API**: Direct HTTP requests to API endpoints
+- **FormData Construction**: Client-side form data creation
+- **Response Handling**: JSON response parsing and error handling
+- **Type Safety**: Explicit response type handling
+
+```typescript
+// Frontend Integration Pattern
+const formData = new FormData()
+formData.append('file', uploadRequest.file)
+formData.append('language', uploadRequest.language)
+
+const response = await fetch('/api/process-epub', {
+  method: 'POST',
+  body: formData,
+})
+
+const result = await response.json()
 ```
 
 ## Future Architecture Considerations

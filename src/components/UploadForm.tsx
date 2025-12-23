@@ -93,17 +93,17 @@ export default function UploadForm() {
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const updateFileSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null
     setFormData((prev) => ({ ...prev, file }))
     setError(null)
   }
 
-  const handleLanguageChange = (language: Language) => {
+  const selectLanguage = (language: Language) => {
     setFormData((prev) => ({ ...prev, language }))
   }
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const processUpload = async (event: React.FormEvent) => {
     event.preventDefault()
     setError(null)
 
@@ -150,7 +150,7 @@ export default function UploadForm() {
         {error && <ErrorBanner error={error} />}
 
         <form
-          onSubmit={handleSubmit}
+          onSubmit={processUpload}
           className="space-y-6"
           data-testid="upload-form"
         >
@@ -167,7 +167,7 @@ export default function UploadForm() {
                 id="file-input"
                 type="file"
                 accept=".epub"
-                onChange={handleFileChange}
+                onChange={updateFileSelection}
                 className="hidden"
                 disabled={isSubmitting}
               />
@@ -203,7 +203,7 @@ export default function UploadForm() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={() => handleLanguageChange('en')}
+                onClick={() => selectLanguage('en')}
                 className={`p-4 border rounded-lg text-center transition-colors ${
                   formData.language === 'en'
                     ? 'border-blue-500 bg-blue-50 text-blue-700'
@@ -216,7 +216,7 @@ export default function UploadForm() {
               </button>
               <button
                 type="button"
-                onClick={() => handleLanguageChange('ru')}
+                onClick={() => selectLanguage('ru')}
                 className={`p-4 border rounded-lg text-center transition-colors ${
                   formData.language === 'ru'
                     ? 'border-blue-500 bg-blue-50 text-blue-700'

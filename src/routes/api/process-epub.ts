@@ -43,14 +43,17 @@ async function cleanupTempFiles(filePaths: Array<string>): Promise<void> {
   )
 }
 
-// Utility function to write file content to temporary location
-async function writeFileToTemp(file: File, tempPath: string): Promise<void> {
+// Utility function to save uploaded file to temporary location
+async function saveUploadedFileToTemp(
+  file: File,
+  tempPath: string,
+): Promise<void> {
   const buffer = Buffer.from(await file.arrayBuffer())
   await fs.writeFile(tempPath, buffer)
 }
 
-// Utility function to execute epub-hyphen command
-async function executeEpubHyphen(
+// Utility function to hyphenate EPUB file using epub-hyphen command
+async function hyphenateEpubFile(
   inputPath: string,
   outputPath: string,
   language: SupportedLanguage,
@@ -68,8 +71,8 @@ async function executeEpubHyphen(
   }
 }
 
-// Utility function to read processed file content
-async function readProcessedFile(filePath: string): Promise<Buffer> {
+// Utility function to read hyphenated EPUB file content
+async function readHyphenatedEpubFile(filePath: string): Promise<Buffer> {
   return await fs.readFile(filePath)
 }
 
@@ -134,8 +137,8 @@ export const Route = createFileRoute('/api/process-epub')({
           const outputTempPath = createTempFilePath('-output')
           const tempFiles = [inputTempPath, outputTempPath]
 
-          // Write uploaded file to temporary location
-          await writeFileToTemp(fileValue, inputTempPath)
+          // Save uploaded file to temporary location
+          await saveUploadedFileToTemp(fileValue, inputTempPath)
 
           // Log original file information
           console.log('Original EPUB file:')
@@ -143,15 +146,16 @@ export const Route = createFileRoute('/api/process-epub')({
           console.log('- File size:', fileValue.size, 'bytes')
 
           try {
-            // Execute epub-hyphen command
-            await executeEpubHyphen(
+            // Hyphenate EPUB file
+            await hyphenateEpubFile(
               inputTempPath,
               outputTempPath,
               languageValue,
             )
 
-            // Read processed file
-            const processedFileBuffer = await readProcessedFile(outputTempPath)
+            // Read hyphenated file
+            const processedFileBuffer =
+              await readHyphenatedEpubFile(outputTempPath)
 
             // Log processed file information
             console.log('Processed EPUB file:')

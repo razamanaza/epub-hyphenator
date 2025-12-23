@@ -69,6 +69,7 @@ epub-hyphen --version
 - **Memory**: 4GB+
 - **Storage**: SSD for better performance
 - **OS**: Linux (Ubuntu/Debian recommended)
+- **CLI Tool**: `epub-hyphen` v1.0+ installed globally
 
 ### Deployment Process
 
@@ -119,6 +120,10 @@ TEMP_DIR=/tmp   # Temporary file directory
 
 # Security
 CORS_ORIGIN=https://yourdomain.com
+
+# CLI Tool Configuration
+EPUB_HYPHEN_PATH=/usr/local/bin/epub-hyphen
+EPUB_HYPHEN_TIMEOUT=30000 # 30 seconds
 ```
 
 #### Security Considerations

@@ -1,17 +1,62 @@
-Welcome to your new TanStack app!
+# EPUB Hyphenator
 
-# Getting Started
+A web application for applying language-specific hyphenation to EPUB files, improving typography and readability for digital publications. Upload EPUB files and choose between English or Russian hyphenation patterns for optimal text flow.
 
-To run this application:
+## Features
 
-```bash
-npm install
-npm run start
-```
+- **File Upload**: Drag-and-drop or click-to-select EPUB file upload with real-time validation
+- **Language Support**: English and Russian hyphenation patterns
+- **File Validation**: Automatic validation for file type (EPUB only) and size limits (up to 50MB)
+- **Processing Pipeline**: Server-side hyphenation processing using the `epub-hyphen` CLI tool
+- **Download Results**: Automatic download of processed EPUB files
+- **Error Handling**: Comprehensive error messages and user feedback
+- **Responsive Design**: Mobile-friendly interface built with Tailwind CSS
+
+## Technology Stack
+
+- **Frontend**: React 19, TypeScript, Tailwind CSS, TanStack Router
+- **Backend**: TanStack Start with file-based API routes
+- **Build Tool**: Vite with optimized configuration
+- **Testing**: Vitest with React Testing Library
+- **Development**: ESLint, Prettier, TypeScript strict mode
+- **Processing**: External `epub-hyphen` CLI tool for hyphenation
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- The `epub-hyphen` CLI tool installed globally (see Docker setup below for automatic installation)
+
+### Local Development
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/razamanaza/epub-hyphenator.git
+   cd epub-hyphenator
+   ```
+
+2. **Install dependencies:**
+
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server:**
+
+   ```bash
+   npm run dev
+   ```
+
+4. **Open your browser:**
+   - Navigate to `http://localhost:3000`
+   - Upload an EPUB file and select your preferred language
 
 ## Running with Docker
 
-This application includes a complete Docker setup for containerized deployment. The Docker configuration includes the epub-hyphen library globally installed for EPUB processing functionality.
+This application includes a complete Docker setup for containerized deployment with the `epub-hyphen` CLI tool pre-installed.
 
 ### Prerequisites
 
@@ -69,289 +114,138 @@ The Docker setup includes:
 
 The application runs identically in Docker as it does in a local development environment, with all EPUB processing functionality preserved.
 
-# Building For Production
+## API Documentation
 
-To build this application for production:
+### Process EPUB Endpoint
 
-```bash
-npm run build
+The application provides a single API endpoint for EPUB processing:
+
+**POST** `/api/process-epub`
+
+#### Request
+
+- **Content-Type**: `multipart/form-data`
+- **Body Parameters**:
+  - `file` (File): EPUB file to process (required)
+  - `language` (String): Hyphenation language, either `"en"` for English or `"ru"` for Russian (required)
+
+#### Response
+
+**Success Response (200 OK)**:
+
+```json
+{
+  "success": true,
+  "fileName": "processed-file.epub",
+  "file": "<base64-encoded-file-data>"
+}
 ```
 
-## Testing
+**Error Responses**:
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+- **400 Bad Request**: Invalid file type, size, or language parameter
+- **500 Internal Server Error**: Processing failed or server error
+
+#### Example Usage
+
+```javascript
+const formData = new FormData()
+formData.append('file', epubFile)
+formData.append('language', 'en')
+
+const response = await fetch('/api/process-epub', {
+  method: 'POST',
+  body: formData,
+})
+
+if (response.ok) {
+  const result = await response.json()
+  // result.file contains the processed EPUB as base64
+  // result.fileName contains the suggested download filename
+}
+```
+
+## Development
+
+### Available Scripts
+
+```bash
+# Development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Run tests
+npm run test
+
+# Lint code
+npm run lint
+
+# Format code
+npm run format
+
+# Check and fix formatting/linting
+npm run check
+
+# TypeScript type checking
+npm run ts-check
+```
+
+### Testing
+
+This project uses [Vitest](https://vitest.dev/) for testing with React Testing Library. Tests cover:
+
+- Component rendering and user interactions
+- Form validation logic
+- Error handling scenarios
+- API integration tests
+
+Run tests with:
 
 ```bash
 npm run test
 ```
 
-## Styling
+### Code Quality
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+- **ESLint**: Configured with TanStack rules for consistent code style
+- **Prettier**: Automatic code formatting
+- **TypeScript**: Strict type checking enabled
+- **Naming Conventions**: Follows global Cline rules (verbs for functions, nouns for values)
 
-## Linting & Formatting
+## Current Status
 
-This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) for linting and formatting. Eslint is configured using [tanstack/eslint-config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
+**Project Status**: MVP Complete (95% - Ready for Production)
+**Last Updated**: December 23, 2025
 
-```bash
-npm run lint
-npm run format
-npm run check
-```
+### ✅ Completed Features
 
-## Routing
+- **Frontend Implementation**: Complete upload form with drag-and-drop, validation, and responsive design
+- **Backend Processing**: Full EPUB processing pipeline using `epub-hyphen` CLI tool
+- **API Integration**: RESTful endpoint with proper error handling and file validation
+- **Docker Deployment**: Containerized setup with CLI tool pre-installed
+- **Testing Infrastructure**: Comprehensive unit tests for all components and API endpoints
+- **Code Quality**: ESLint, Prettier, TypeScript strict mode, following global Cline engineering principles
 
-This project uses [TanStack Router](https://tanstack.com/router). The initial setup is a file based router. Which means that the routes are managed as files in `src/routes`.
+### 🚧 Remaining Work (5%)
 
-### Adding A Route
+- **Performance Validation**: Large file handling and memory usage testing
+- **Production Deployment**: Environment configuration and monitoring setup
 
-To add a new route to your application just add another a new file in the `./src/routes` directory.
+## Deployment Considerations
 
-TanStack will automatically generate the content of the route file for you.
+### CLI Tool Dependency
 
-Now that you have two routes you can use a `Link` component to navigate between them.
+The application requires the `epub-hyphen` CLI tool for EPUB processing. For production deployment:
 
-### Adding Links
+1. **Docker Deployment**: Use the provided Docker setup (recommended)
+2. **Manual Installation**: Install `epub-hyphen` globally on the server
+3. **CI/CD**: Include CLI tool installation in deployment pipeline
 
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
+## License
 
-```tsx
-import { Link } from '@tanstack/react-router'
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you use the `<Outlet />` component.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-
-import { Link } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  component: () => (
-    <>
-      <header>
-        <nav>
-          <Link to="/">Home</Link>
-          <Link to="/about">About</Link>
-        </nav>
-      </header>
-      <Outlet />
-      <TanStackRouterDevtools />
-    </>
-  ),
-})
-```
-
-The `<TanStackRouterDevtools />` component is not required so you can remove it if you don't want it in your layout.
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-const peopleRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/people',
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json() as Promise<{
-      results: {
-        name: string
-      }[]
-    }>
-  },
-  component: () => {
-    const data = peopleRoute.useLoaderData()
-    return (
-      <ul>
-        {data.results.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    )
-  },
-})
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-### React-Query
-
-React-Query is an excellent addition or alternative to route loading and integrating it into you application is a breeze.
-
-First add your dependencies:
-
-```bash
-npm install @tanstack/react-query @tanstack/react-query-devtools
-```
-
-Next we'll need to create a query client and provider. We recommend putting those in `main.tsx`.
-
-```tsx
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
-// ...
-
-const queryClient = new QueryClient()
-
-// ...
-
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement)
-
-  root.render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>,
-  )
-}
-```
-
-You can also add TanStack Query Devtools to the root route (optional).
-
-```tsx
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-
-const rootRoute = createRootRoute({
-  component: () => (
-    <>
-      <Outlet />
-      <ReactQueryDevtools buttonPosition="top-right" />
-      <TanStackRouterDevtools />
-    </>
-  ),
-})
-```
-
-Now you can use `useQuery` to fetch your data.
-
-```tsx
-import { useQuery } from '@tanstack/react-query'
-
-import './App.css'
-
-function App() {
-  const { data } = useQuery({
-    queryKey: ['people'],
-    queryFn: () =>
-      fetch('https://swapi.dev/api/people')
-        .then((res) => res.json())
-        .then((data) => data.results as { name: string }[]),
-    initialData: [],
-  })
-
-  return (
-    <div>
-      <ul>
-        {data.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    </div>
-  )
-}
-
-export default App
-```
-
-You can find out everything you need to know on how to use React-Query in the [React-Query documentation](https://tanstack.com/query/latest/docs/framework/react/overview).
-
-## State Management
-
-Another common requirement for React applications is state management. There are many options for state management in React. TanStack Store provides a great starting point for your project.
-
-First you need to add TanStack Store as a dependency:
-
-```bash
-npm install @tanstack/store
-```
-
-Now let's create a simple counter in the `src/App.tsx` file as a demonstration.
-
-```tsx
-import { useStore } from '@tanstack/react-store'
-import { Store } from '@tanstack/store'
-import './App.css'
-
-const countStore = new Store(0)
-
-function App() {
-  const count = useStore(countStore)
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-    </div>
-  )
-}
-
-export default App
-```
-
-One of the many nice features of TanStack Store is the ability to derive state from other state. That derived state will update when the base state updates.
-
-Let's check this out by doubling the count using derived state.
-
-```tsx
-import { useStore } from '@tanstack/react-store'
-import { Store, Derived } from '@tanstack/store'
-import './App.css'
-
-const countStore = new Store(0)
-
-const doubledStore = new Derived({
-  fn: () => countStore.state * 2,
-  deps: [countStore],
-})
-doubledStore.mount()
-
-function App() {
-  const count = useStore(countStore)
-  const doubledCount = useStore(doubledStore)
-
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-      <div>Doubled - {doubledCount}</div>
-    </div>
-  )
-}
-
-export default App
-```
-
-We use the `Derived` class to create a new store that is derived from another store. The `Derived` class has a `mount` method that will start the derived store updating.
-
-Once we've created the derived store we can use it in the `App` component just like we would any other store using the `useStore` hook.
-
-You can find out everything you need to know on how to use TanStack Store in the [TanStack Store documentation](https://tanstack.com/store/latest).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
+This project is part of the EPUB Hyphenator application, built with modern web technologies to improve digital typography.

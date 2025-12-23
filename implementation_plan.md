@@ -1,111 +1,134 @@
-# Implementation Plan
+# Docker Containerization Implementation Plan for epub-hyphenator
 
 ## [Overview]
 
-Single sentence describing the overall goal.
-This plan implements automatic EPUB file download functionality after successful processing, with proper error handling and enhanced user feedback.
+Create a production-ready Docker containerization setup for the epub-hyphenator React application using modern Docker best practices and multi-stage builds for optimized image size and security.
 
-Multiple paragraphs outlining the scope, context, and high-level approach.
-The current implementation has a mismatch between frontend and backend response handling. The backend correctly processes EPUB files and returns them as binary data with proper headers, but the frontend expects JSON responses and fails to handle the binary data. This implementation will modify the frontend to properly handle binary responses, trigger automatic file downloads, and provide appropriate user feedback. The backend will be enhanced to add a "-hyphenated" suffix to processed filenames. The solution maintains all existing validation, error handling, and processing logic while adding the missing download functionality.
+This implementation will containerize the epub-hyphenator application to enable consistent local testing and deployment. The setup uses a multi-stage Dockerfile with Node.js 22-alpine base, installs epub-hyphen globally as required, and implements security best practices including non-root user execution. The docker-compose configuration provides simple local service orchestration with proper port mapping and environment handling.
 
 ## [Types]
 
-Single sentence describing the type system changes.
-No new types are required, but existing types will be used in modified functions.
+No new TypeScript types are required for this Docker implementation.
 
-Detailed type definitions, interfaces, enums, or data structures with complete specifications.
+All existing application types remain unchanged:
 
-- `UploadFormData`: Existing interface for form data (file + language)
-- `FormValidationError`: Existing union type for validation errors
-- `SupportedLanguage`: Existing type for language validation ('en' | 'ru')
-- `File`: Standard browser File type
-- `Blob`: Standard browser Blob type for file downloads
+- `UploadFormData`: Form data interface (file + language)
+- `SupportedLanguage`: Language validation type ('en' | 'ru')
+- Standard browser types: File, Blob, etc.
 
 ## [Files]
 
-Single sentence describing file modifications.
-Two files will be modified to implement the download functionality.
+Three new files will be created to implement Docker containerization.
 
-Detailed breakdown:
+**New Files**:
 
-- **Modified Files**:
-  - `src/components/UploadForm.tsx`: Update submitForm function to handle binary responses and trigger downloads
-  - `src/routes/api/process-epub.ts`: Add "-hyphenated" suffix to downloaded filename
+- `Dockerfile`: Multi-stage production build with epub-hyphen installation
+- `docker-compose.yml`: Local service orchestration configuration
+- `.dockerignore`: Build context optimization file
 
-- **No New Files**: All changes are modifications to existing files
-- **No Deleted Files**: All existing files remain in place
+**Modified Files**:
+
+- None - existing application code remains unchanged
+
+**Files to Ignore**:
+
+- No existing files will be deleted
 
 ## [Functions]
 
-Single sentence describing function modifications.
-The submitForm function will be significantly modified, and the backend response will be enhanced.
+No application functions will be modified.
 
-Detailed breakdown:
+**Docker-specific Functions**:
 
-- **Modified Functions**:
-  - `submitForm(uploadRequest: UploadFormData): Promise<void>` in `src/components/UploadForm.tsx`
-    - Change: Replace JSON parsing with binary response handling
-    - Add: File download logic using Blob and URL.createObjectURL
-    - Add: Success feedback with form clearing
-    - Add: Response type detection (binary vs JSON)
+- Container build process (handled by Dockerfile)
+- Container orchestration (handled by docker-compose.yml)
+- Build context optimization (handled by .dockerignore)
 
-- **Backend Enhancement**:
-  - Modify `Content-Disposition` header in `src/routes/api/process-epub.ts`
-    - Change: Add "-hyphenated" suffix to filename in response headers
+**Backend Integration**:
+
+- Existing `executeEpubHyphen` function will work unchanged as epub-hyphen will be available in PATH
+- Temporary file handling in `/tmp` will work within container context
+- All API endpoints remain functional
 
 ## [Classes]
 
-Single sentence describing class modifications.
-No class modifications are required for this implementation.
+No application classes will be modified.
 
-Detailed breakdown:
+**Container Configuration**:
 
-- No new classes needed
-- No existing classes modified
-- All changes are to standalone functions and response handling
+- Docker defines container runtime behavior
+- No runtime class changes required
+- Application architecture preserved
 
 ## [Dependencies]
 
-Single sentence describing dependency modifications.
-No new dependencies are required for this implementation.
+Container-level dependencies will be managed through Docker.
 
-Details of new packages, version changes, and integration requirements.
+**Node.js Dependencies**:
 
-- No new npm packages needed
-- No version changes required
-- Uses existing browser APIs: Blob, URL.createObjectURL, fetch
-- Maintains compatibility with existing TanStack framework
+- All npm dependencies from package.json will be installed in container
+- No changes to existing dependency versions
+
+**System Dependencies**:
+
+- epub-hyphen: Installed globally via `npm i -g epub-hyphen`
+- Alpine Linux base provides required system utilities
+
+**No New npm Packages**:
+
+- Application dependencies remain unchanged
+- Docker handles container-level dependencies
 
 ## [Testing]
 
-Single sentence describing testing approach.
-Manual testing will verify the download functionality and error handling.
+Comprehensive testing approach for containerized application.
 
-Test file requirements, existing test modifications, and validation strategies.
+**Build Testing**:
 
-- **Manual Testing**:
-  - Upload valid EPUB file and verify automatic download
-  - Verify "-hyphenated" suffix in downloaded filename
-  - Test error scenarios (invalid file type, size, language)
-  - Verify success message and form clearing
-  - Test network error handling
+- Verify Docker image builds successfully
+- Test multi-stage build cache efficiency
+- Validate epub-hyphen global installation
 
-- **Existing Tests**:
-  - No changes to existing unit tests
-  - Component tests remain valid
-  - Form validation tests unchanged
+**Runtime Testing**:
+
+- Container startup and health checks
+- Port accessibility (localhost:3000)
+- EPUB upload and processing functionality
+- File download functionality
+
+**Integration Testing**:
+
+- docker-compose service orchestration
+- Volume mounting (if needed for debugging)
+- Environment variable handling
+
+**Performance Testing**:
+
+- Image size optimization verification
+- Build time measurement
+- Container resource usage monitoring
 
 ## [Implementation Order]
 
-Single sentence describing the implementation sequence.
-Changes should be implemented in backend-first order to ensure compatibility.
+Sequential implementation to ensure successful containerization.
 
-Numbered steps showing the logical order of changes to minimize conflicts and ensure successful integration:
+1. **Create .dockerignore**: Optimize build context by excluding unnecessary files
+2. **Create Dockerfile**: Multi-stage build with epub-hyphen global installation
+3. **Create docker-compose.yml**: Local service configuration for testing
+4. **Build Testing**: Verify `docker build` completes successfully
+5. **Runtime Testing**: Test container startup and application functionality
+6. **Integration Testing**: Verify EPUB processing works in container
+7. **Documentation**: Update README.md with Docker usage instructions
 
-1. **Backend Enhancement**: Modify filename in `src/routes/api/process-epub.ts`
-2. **Frontend Update**: Modify `submitForm` function in `src/components/UploadForm.tsx`
-3. **Testing**: Manual verification of download functionality
-4. **Validation**: Test error scenarios and edge cases
-5. **Documentation**: Update memory bank with implementation details
+**Key Implementation Details**:
 
-This order ensures the backend is ready to serve files with the correct filename before the frontend attempts to download them.
+- Multi-stage build: dependencies → epub-hyphen install → production
+- Node.js 22-alpine base image as specified
+- Non-root user (nodejs:1001) for security
+- Build cache mounting for faster rebuilds
+- Proper layer ordering for optimal Docker cache usage
+- epub-hyphen global installation in PATH
+- Port 3000 exposure and mapping
+- Optimized production NODE_ENV settings
+
+This plan ensures the epub-hyphenator application runs identically in Docker as it does locally, with all functionality preserved and enhanced security/performance through containerization best practices.

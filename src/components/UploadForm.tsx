@@ -9,12 +9,6 @@ interface UploadFormData {
   language: Language
 }
 
-type FormValidationError =
-  | 'no-file'
-  | 'invalid-file-type'
-  | 'file-too-large'
-  | 'unknown-error'
-
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
 
 function validateEpubFile(file: File | null): string | null {

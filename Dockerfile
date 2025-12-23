@@ -57,6 +57,9 @@ ENV NODE_ENV=production \
     NODE_OPTIONS="--max-old-space-size=256 --no-warnings" \
     NPM_CONFIG_LOGLEVEL=silent
 
+# Install zip and unzip packages for epub processing
+RUN apk add --no-cache zip unzip
+
 # Copy package files first
 COPY --chown=nodejs:nodejs package*.json ./
 

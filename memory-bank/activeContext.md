@@ -4,15 +4,15 @@
 
 ### Primary Objective
 
-Finalize the MVP implementation of the EPUB Hyphenator by completing comprehensive testing, deployment preparation, and final user experience polish for the fully functional processing pipeline.
+Complete the final 5% of the EPUB Hyphenator MVP by focusing on comprehensive testing, deployment preparation, and user experience polish to prepare for production deployment.
 
 ### Current Implementation Status
 
 - **Frontend**: ✅ Complete (upload form, validation, UI, API integration)
-- **Backend**: ✅ Complete (processing pipeline with CLI tool integration)
-- **Processing**: ✅ Complete (file upload, processing, download working)
+- **Backend**: ✅ Complete (full processing pipeline with CLI tool integration)
+- **Processing**: ✅ Complete (end-to-end file upload, processing, download)
 - **Testing**: ✅ Frontend unit tests complete + basic integration validated
-- **Deployment**: ❌ Not Started (CLI tool dependency documentation needed)
+- **Deployment**: 🚧 In Progress (CLI tool dependency documentation needed)
 - **Overall Completion**: 95% (MVP functionally complete, ready for deployment phase)
 
 ### Immediate Tasks
@@ -122,7 +122,64 @@ interface UploadFormData {
 
 ## Active Considerations and Trade-offs
 
-### Current Technical Challenges
+### Recent Rules Compliance Fixes
+
+### Global Cline Rules Violations Resolved
+
+**Completed**: Comprehensive audit and fixes for global Cline engineering rules violations
+
+#### 1. Naming Convention Violations Fixed
+
+**Location**: `src/components/UploadForm.tsx`
+**Violations Found**:
+
+- `handleFileChange` → Renamed to `updateFileSelection`
+- `handleLanguageChange` → Renamed to `selectLanguage`
+- `handleSubmit` → Renamed to `processUpload`
+
+**Rationale**: Eliminated forbidden "handleX" pattern per zero-tolerance naming rules. All function names now use descriptive verbs describing their purpose.
+
+#### 2. Function Descriptiveness Improvements
+
+**Location**: `src/routes/api/process-epub.ts`
+**Improvements Made**:
+
+- `writeFileToTemp` → `saveUploadedFileToTemp`
+- `executeEpubHyphen` → `hyphenateEpubFile`
+- `readProcessedFile` → `readHyphenatedEpubFile`
+
+**Rationale**: Function names now clearly describe what they do with the EPUB files, following core engineering principle of clarity over brevity.
+
+#### 3. Template Code Cleanup
+
+**Location**: `src/components/Header.tsx`
+**Action**: Component completely removed
+**Rationale**: Irrelevant TanStack Router demo navigation code that was unused in the application. Removed to eliminate dead code and maintain clean codebase.
+
+#### 4. Test File Validation
+
+**Location**: `src/components/__tests__/UploadForm.test.tsx`
+**Status**: No changes required
+**Rationale**: Tests use DOM interactions (fireEvent, screen queries) rather than direct function calls, so no references to renamed internal functions.
+
+#### 5. Context7 Compliance Status
+
+**Status**: Context7 MCP server unavailable
+**Approach**: Working from training data with flagged areas for future verification
+**Flagged Areas**:
+
+- React hooks patterns (useState, event handling)
+- TanStack Router integration
+- File upload API patterns
+
+### Technical Debt Reduction
+
+- **Eliminated**: Dead code and unused components
+- **Improved**: Function naming clarity throughout codebase
+- **Maintained**: All existing functionality and tests passing
+- **Enhanced**: Code maintainability and readability
+
+## Current Technical Challenges
 
 #### 1. CLI Tool Dependency Management
 

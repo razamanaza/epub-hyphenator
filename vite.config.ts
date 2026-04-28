@@ -8,7 +8,7 @@ import { nitro } from 'nitro/vite'
 
 const config = defineConfig({
   plugins: [
-    devtools(),
+    ...(process.env.NODE_ENV !== 'production' ? [devtools()] : []),
     nitro(),
     // this is the plugin that enables path aliases
     viteTsConfigPaths({

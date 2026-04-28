@@ -1,15 +1,12 @@
 import { useState } from 'react'
 import { FileText, Languages, Upload } from 'lucide-react'
 import ErrorBanner from './ErrorBanner'
-
-type Language = 'en' | 'ru'
+import { MAX_FILE_SIZE, type SupportedLanguage } from '@/shared/constants'
 
 interface UploadFormData {
   file: File | null
-  language: Language
+  language: SupportedLanguage
 }
-
-const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
 
 function validateEpubFile(file: File | null): string | null {
   if (!file) {
@@ -32,56 +29,38 @@ async function submitForm(uploadRequest: UploadFormData): Promise<void> {
     throw new Error('No file selected')
   }
 
-  // Create FormData for multipart/form-data upload
   const formData = new FormData()
   formData.append('file', uploadRequest.file)
   formData.append('language', uploadRequest.language)
 
-  try {
-    const response = await fetch('/api/process-epub', {
-      method: 'POST',
-      body: formData,
-    })
+  const response = await fetch('/api/process-epub', {
+    method: 'POST',
+    body: formData,
+  })
 
-    if (!response.ok) {
-      // Handle error responses (JSON format)
-      const errorResult = await response.json()
-      throw new Error(errorResult.error || 'Processing failed')
-    }
+  if (!response.ok) {
+    const errorResult = await response.json()
+    throw new Error(errorResult.error || 'Processing failed')
+  }
 
-    // Check if response is binary (successful processing)
-    const contentType = response.headers.get('content-type')
-    if (contentType?.includes('application/epub+zip')) {
-      // Handle binary response - download the file
-      const blob = await response.blob()
+  const contentType = response.headers.get('content-type')
+  if (contentType?.includes('application/epub+zip')) {
+    const blob = await response.blob()
+    const contentDisposition = response.headers.get('content-disposition')
+    const filenameMatch = contentDisposition?.match(/filename="([^"]+)"/)
+    const filename = filenameMatch ? filenameMatch[1] : 'hyphenated-file.epub'
 
-      // Extract filename from Content-Disposition header
-      const contentDisposition = response.headers.get('content-disposition')
-      const filenameMatch = contentDisposition?.match(/filename="([^"]+)"/)
-      const filename = filenameMatch ? filenameMatch[1] : 'hyphenated-file.epub'
-
-      // Create download link and trigger click
-      const downloadUrl = URL.createObjectURL(blob)
-      const downloadLink = document.createElement('a')
-      downloadLink.href = downloadUrl
-      downloadLink.download = filename
-      document.body.appendChild(downloadLink)
-      downloadLink.click()
-      document.body.removeChild(downloadLink)
-      URL.revokeObjectURL(downloadUrl)
-
-      // Return success message for UI feedback
-      return Promise.resolve()
-    } else {
-      // Handle unexpected JSON success response
-      const result = await response.json()
-      throw new Error(result.error || 'Unexpected response format')
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      throw error
-    }
-    throw new Error('An unexpected error occurred during upload')
+    const downloadUrl = URL.createObjectURL(blob)
+    const downloadLink = document.createElement('a')
+    downloadLink.href = downloadUrl
+    downloadLink.download = filename
+    document.body.appendChild(downloadLink)
+    downloadLink.click()
+    document.body.removeChild(downloadLink)
+    URL.revokeObjectURL(downloadUrl)
+  } else {
+    const result = await response.json()
+    throw new Error(result.error || 'Unexpected response format')
   }
 }
 
@@ -99,7 +78,7 @@ export default function UploadForm() {
     setError(null)
   }
 
-  const selectLanguage = (language: Language) => {
+  const selectLanguage = (language: SupportedLanguage) => {
     setFormData((prev) => ({ ...prev, language }))
   }
 

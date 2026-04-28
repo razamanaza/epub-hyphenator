@@ -5,16 +5,13 @@ import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 import { json } from '@tanstack/react-start'
 import { createFileRoute } from '@tanstack/react-router'
-import { MAX_FILE_SIZE, type SupportedLanguage } from '@/shared/constants'
+import { MAX_FILE_SIZE } from '@/shared/constants'
+import { detectEpubLanguage } from '@/shared/epub-utils'
 
 const execAsync = promisify(exec)
 
 function isFile(value: unknown): value is File {
   return value instanceof File
-}
-
-function isSupportedLanguage(value: unknown): value is SupportedLanguage {
-  return value === 'en' || value === 'ru'
 }
 
 function createTempFilePath(suffix: string = ''): string {
@@ -42,7 +39,6 @@ export const Route = createFileRoute('/api/process-epub')({
         try {
           const formData = await request.formData()
           const fileValue = formData.get('file')
-          const languageValue = formData.get('language')
 
           if (!isFile(fileValue)) {
             return json({ error: 'No file provided', success: false }, { status: 400 })
@@ -62,24 +58,21 @@ export const Route = createFileRoute('/api/process-epub')({
             )
           }
 
-          if (!isSupportedLanguage(languageValue)) {
-            return json(
-              { error: 'Invalid language. Must be "en" or "ru"', success: false },
-              { status: 400 },
-            )
-          }
-
           const inputTempPath = createTempFilePath('-input')
           const outputTempPath = createTempFilePath('-output')
 
-          await fs.writeFile(inputTempPath, Buffer.from(await fileValue.arrayBuffer()))
+          const epubBuffer = Buffer.from(await fileValue.arrayBuffer())
+          await fs.writeFile(inputTempPath, epubBuffer)
+
+          const detectedLanguage = detectEpubLanguage(epubBuffer)
 
           console.log('Original EPUB file:')
           console.log('- File name:', fileValue.name)
           console.log('- File size:', fileValue.size, 'bytes')
+          console.log('- Detected language:', detectedLanguage)
 
           try {
-            await execAsync(`epub-hyphen -l ${languageValue} ${inputTempPath} -o ${outputTempPath}`)
+            await execAsync(`epub-hyphen -l ${detectedLanguage} ${inputTempPath} -o ${outputTempPath}`)
 
             const processedFileBuffer = await fs.readFile(outputTempPath)
 

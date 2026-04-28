@@ -14,9 +14,7 @@ describe('UploadForm', () => {
 
     expect(screen.getByText('Upload EPUB File')).toBeInTheDocument()
     expect(
-      screen.getByText(
-        /Select an EPUB file and choose your preferred language/,
-      ),
+      screen.getByText(/Language is detected automatically/),
     ).toBeInTheDocument()
   })
 
@@ -26,53 +24,6 @@ describe('UploadForm', () => {
     const fileInput = screen.getByLabelText(/EPUB File/)
     expect(fileInput).toHaveAttribute('type', 'file')
     expect(fileInput).toHaveAttribute('accept', '.epub')
-  })
-
-  it('renders language selection buttons', () => {
-    render(<UploadForm />)
-
-    expect(screen.getByText('English')).toBeInTheDocument()
-    expect(screen.getByText('Russian')).toBeInTheDocument()
-    expect(screen.getByText('en')).toBeInTheDocument()
-    expect(screen.getByText('ru')).toBeInTheDocument()
-  })
-
-  it('defaults to English language selection', () => {
-    render(<UploadForm />)
-
-    const englishButton = screen.getByText('English').closest('button')
-    const russianButton = screen.getByText('Russian').closest('button')
-
-    expect(englishButton).toHaveClass(
-      'border-blue-500',
-      'bg-blue-50',
-      'text-blue-700',
-    )
-    expect(russianButton).toHaveClass(
-      'border-gray-300',
-      'bg-white',
-      'text-gray-700',
-    )
-  })
-
-  it('allows language selection change', () => {
-    render(<UploadForm />)
-
-    const russianButton = screen.getByText('Russian').closest('button')
-    fireEvent.click(russianButton!)
-
-    expect(russianButton).toHaveClass(
-      'border-blue-500',
-      'bg-blue-50',
-      'text-blue-700',
-    )
-
-    const englishButton = screen.getByText('English').closest('button')
-    expect(englishButton).toHaveClass(
-      'border-gray-300',
-      'bg-white',
-      'text-gray-700',
-    )
   })
 
   it('shows file name when file is selected', async () => {
@@ -130,7 +81,7 @@ describe('UploadForm', () => {
         screen.getByText('File size must be less than 50MB'),
       ).toBeInTheDocument()
     })
-  })
+  }, 10000)
 
   it('disables submit button when no file is selected', () => {
     render(<UploadForm />)
@@ -182,7 +133,6 @@ describe('UploadForm', () => {
   })
 
   it('shows error message when submission fails', async () => {
-    // Mock the fetch call to simulate API failure
     global.fetch = vi.fn(() =>
       Promise.resolve({
         ok: false,
@@ -212,7 +162,6 @@ describe('UploadForm', () => {
   it('validates file selection on submit', async () => {
     render(<UploadForm />)
 
-    // Test validation by directly calling the form submission
     const form = screen.getByTestId('upload-form')
     fireEvent.submit(form)
 

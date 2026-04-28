@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import { FileText, Languages, Upload } from 'lucide-react'
+import { FileText, Upload } from 'lucide-react'
 import ErrorBanner from './ErrorBanner'
-import { MAX_FILE_SIZE, type SupportedLanguage } from '@/shared/constants'
+import { MAX_FILE_SIZE } from '@/shared/constants'
 
 interface UploadFormData {
   file: File | null
-  language: SupportedLanguage
 }
 
 function validateEpubFile(file: File | null): string | null {
@@ -31,7 +30,6 @@ async function submitForm(uploadRequest: UploadFormData): Promise<void> {
 
   const formData = new FormData()
   formData.append('file', uploadRequest.file)
-  formData.append('language', uploadRequest.language)
 
   const response = await fetch('/api/process-epub', {
     method: 'POST',
@@ -65,21 +63,14 @@ async function submitForm(uploadRequest: UploadFormData): Promise<void> {
 }
 
 export default function UploadForm() {
-  const [formData, setFormData] = useState<UploadFormData>({
-    file: null,
-    language: 'en',
-  })
+  const [formData, setFormData] = useState<UploadFormData>({ file: null })
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const updateFileSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null
-    setFormData((prev) => ({ ...prev, file }))
+    setFormData({ file })
     setError(null)
-  }
-
-  const selectLanguage = (language: SupportedLanguage) => {
-    setFormData((prev) => ({ ...prev, language }))
   }
 
   const processUpload = async (event: React.FormEvent) => {
@@ -100,9 +91,8 @@ export default function UploadForm() {
     setIsSubmitting(true)
     try {
       await submitForm(formData)
-      // Show success message and clear form
       setError(null)
-      setFormData({ file: null, language: 'en' })
+      setFormData({ file: null })
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'An unexpected error occurred',
@@ -121,8 +111,8 @@ export default function UploadForm() {
             Upload EPUB File
           </h2>
           <p className="text-gray-600">
-            Select an EPUB file and choose your preferred language for
-            hyphenation processing
+            Select an EPUB file to apply hyphenation. Language is detected
+            automatically.
           </p>
         </div>
 
@@ -170,42 +160,6 @@ export default function UploadForm() {
                   </p>
                 </div>
               </label>
-            </div>
-          </div>
-
-          {/* Language Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              <Languages className="w-4 h-4 inline mr-2" />
-              Processing Language
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => selectLanguage('en')}
-                className={`p-4 border rounded-lg text-center transition-colors ${
-                  formData.language === 'en'
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                }`}
-                disabled={isSubmitting}
-              >
-                <div className="font-medium">English</div>
-                <div className="text-sm opacity-75">en</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => selectLanguage('ru')}
-                className={`p-4 border rounded-lg text-center transition-colors ${
-                  formData.language === 'ru'
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                }`}
-                disabled={isSubmitting}
-              >
-                <div className="font-medium">Russian</div>
-                <div className="text-sm opacity-75">ru</div>
-              </button>
             </div>
           </div>
 

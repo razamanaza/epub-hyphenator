@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiProcessEpubRouteImport } from './routes/api/process-epub'
+import { Route as ApiDetectLanguageRouteImport } from './routes/api/detect-language'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,30 +23,39 @@ const ApiProcessEpubRoute = ApiProcessEpubRouteImport.update({
   path: '/api/process-epub',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDetectLanguageRoute = ApiDetectLanguageRouteImport.update({
+  id: '/api/detect-language',
+  path: '/api/detect-language',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/detect-language': typeof ApiDetectLanguageRoute
   '/api/process-epub': typeof ApiProcessEpubRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/detect-language': typeof ApiDetectLanguageRoute
   '/api/process-epub': typeof ApiProcessEpubRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/detect-language': typeof ApiDetectLanguageRoute
   '/api/process-epub': typeof ApiProcessEpubRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/process-epub'
+  fullPaths: '/' | '/api/detect-language' | '/api/process-epub'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/process-epub'
-  id: '__root__' | '/' | '/api/process-epub'
+  to: '/' | '/api/detect-language' | '/api/process-epub'
+  id: '__root__' | '/' | '/api/detect-language' | '/api/process-epub'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiDetectLanguageRoute: typeof ApiDetectLanguageRoute
   ApiProcessEpubRoute: typeof ApiProcessEpubRoute
 }
 
@@ -65,11 +75,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiProcessEpubRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/detect-language': {
+      id: '/api/detect-language'
+      path: '/api/detect-language'
+      fullPath: '/api/detect-language'
+      preLoaderRoute: typeof ApiDetectLanguageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiDetectLanguageRoute: ApiDetectLanguageRoute,
   ApiProcessEpubRoute: ApiProcessEpubRoute,
 }
 export const routeTree = rootRouteImport

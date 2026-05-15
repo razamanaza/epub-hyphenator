@@ -6,7 +6,17 @@ import { promisify } from 'node:util'
 import { json } from '@tanstack/react-start'
 import { createFileRoute } from '@tanstack/react-router'
 import { MAX_FILE_SIZE } from '@/shared/constants'
+import type { SupportedLanguage } from '@/shared/constants'
 import { detectEpubLanguage } from '@/shared/epub-utils'
+
+const SUPPORTED_LANGUAGES = new Set<string>(['en', 'ru'])
+
+function parseSupportedLanguage(value: unknown): SupportedLanguage | null {
+  if (typeof value === 'string' && SUPPORTED_LANGUAGES.has(value)) {
+    return value as SupportedLanguage
+  }
+  return null
+}
 
 const execAsync = promisify(exec)
 
@@ -64,15 +74,16 @@ export const Route = createFileRoute('/api/process-epub')({
           const epubBuffer = Buffer.from(await fileValue.arrayBuffer())
           await fs.writeFile(inputTempPath, epubBuffer)
 
-          const detectedLanguage = detectEpubLanguage(epubBuffer)
+          const manualLanguage = parseSupportedLanguage(formData.get('language'))
+          const language = manualLanguage ?? detectEpubLanguage(epubBuffer)
 
           console.log('Original EPUB file:')
           console.log('- File name:', fileValue.name)
           console.log('- File size:', fileValue.size, 'bytes')
-          console.log('- Detected language:', detectedLanguage)
+          console.log('- Language:', language, manualLanguage ? '(manual)' : '(auto-detected)')
 
           try {
-            await execAsync(`epub-hyphen -l ${detectedLanguage} ${inputTempPath} -o ${outputTempPath}`)
+            await execAsync(`epub-hyphen -l ${language} ${inputTempPath} -o ${outputTempPath}`)
 
             const processedFileBuffer = await fs.readFile(outputTempPath)
 
@@ -82,7 +93,7 @@ export const Route = createFileRoute('/api/process-epub')({
 
             return new Response(new Uint8Array(processedFileBuffer), {
               headers: {
-                'Content-Disposition': `attachment; filename="${fileValue.name.replace('.epub', '')}-hyphenated.epub"`,
+                'Content-Disposition': `attachment; filename="${fileValue.name.replace('.epub', '')}-hyphenated-${language}.epub"`,
                 'Content-Type': 'application/epub+zip',
                 'Content-Length': processedFileBuffer.length.toString(),
               },

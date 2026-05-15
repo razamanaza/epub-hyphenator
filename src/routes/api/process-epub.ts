@@ -5,8 +5,8 @@ import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 import { json } from '@tanstack/react-start'
 import { createFileRoute } from '@tanstack/react-router'
-import { MAX_FILE_SIZE } from '@/shared/constants'
 import type { SupportedLanguage } from '@/shared/constants'
+import { MAX_FILE_SIZE } from '@/shared/constants'
 import { detectEpubLanguage } from '@/shared/epub-utils'
 
 const SUPPORTED_LANGUAGES = new Set<string>(['en', 'ru'])
